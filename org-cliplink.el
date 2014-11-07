@@ -1,12 +1,10 @@
-;;; org-cliplink.el --- a simple command that takes a URL from the
-;;;                     clipboard and inserts an org-mode link with a
-;;;                     title of a page found by the URL into the
-;;;                     current buffer
+;;; org-cliplink.el --- a simple command that takes a URL from the clipboard and inserts an org-mode link with a title of a page found by the URL into the current buffer
 
 ;; Copyright (C) 2014 Alexey Kutepov a.k.a rexim
 
 ;; Author: Alexey Kutepov <reximkut@gmail.com>
 ;; URL: http://github.com/rexim/org-cliplink
+;; Version: 0.1.1
 
 ;; Permission is hereby granted, free of charge, to any person
 ;; obtaining a copy of this software and associated documentation
@@ -38,6 +36,10 @@
 ;; the Emacs window and hit `C-x p i`.
 
 ;;; Commentary:
+;; 
+;; A simple command that takes a URL from the clipboard and inserts an
+;; org-mode link with a title of a page found by the URL into the
+;; current buffer
 ;; 
 ;; This code was a part of my Emacs config almost a year. I decided to
 ;; publish it as a separate package in case someone needs this feature
