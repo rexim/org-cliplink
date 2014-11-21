@@ -1,4 +1,4 @@
-;;; org-cliplink.el --- a simple command that takes a URL from the clipboard and inserts an org-mode link with a title of a page found by the URL into the current buffer
+;;; org-cliplink.el --- insert org-mode links by URL from the clipboard
 
 ;; Copyright (C) 2014 Alexey Kutepov a.k.a rexim
 
