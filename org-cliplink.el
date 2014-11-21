@@ -88,4 +88,4 @@
         (perform-cliplink ,dest-buffer ,url
                           (buffer-string))))))
 
-;;; org-cliplink.el ends here.
+;;; org-cliplink.el ends here
