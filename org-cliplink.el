@@ -45,10 +45,10 @@
 ;; publish it as a separate package in case someone needs this feature
 ;; too.
 
-(defun straight-string (s)
+(defun org-cliplink-straight-string (s)
   (mapconcat '(lambda (x) x) (split-string s) " "))
 
-(defun extract-title-from-html (html)
+(defun org-cliplink-extract-title-from-html (html)
   (let ((start (string-match "<title>" html))
         (end (string-match "</title>" html))
         (chars-to-skip (length "<title>")))
@@ -56,25 +56,25 @@
         (substring html (+ start chars-to-skip) end)
       nil)))
 
-(defun prepare-cliplink-title (title)
+(defun org-cliplink-prepare-cliplink-title (title)
   (let ((replace-table '(("\\[" . "{")
                          ("\\]" . "}")
                          ("&mdash;" . "—")
                          ("&#39;" . "'")))
         (max-length 77)
-        (result (straight-string title)))
+        (result (org-cliplink-straight-string title)))
     (dolist (x replace-table)
       (setq result (replace-regexp-in-string (car x) (cdr x) result)))
     (when (> (length result) max-length)
       (setq result (concat (substring result 0 max-length) "...")))
     result))
 
-(defun perform-cliplink (buffer url content)
+(defun org-cliplink-perform-cliplink (buffer url content)
   (let* ((decoded-content (decode-coding-string content 'utf-8))
-         (title (extract-title-from-html decoded-content)))
+         (title (org-cliplink-extract-title-from-html decoded-content)))
     (with-current-buffer buffer
       (if title
-          (insert (format "[[%s][%s]]" url (prepare-cliplink-title title)))
+          (insert (format "[[%s][%s]]" url (org-cliplink-prepare-cliplink-title title)))
         (insert (format "[[%s]]" url))))))
 
 ;;;###autoload
@@ -85,7 +85,7 @@
     (url-retrieve
      url
      `(lambda (s)
-        (perform-cliplink ,dest-buffer ,url
-                          (buffer-string))))))
+        (org-cliplink-perform-cliplink ,dest-buffer ,url
+                                       (buffer-string))))))
 
 ;;; org-cliplink.el ends here
