@@ -46,7 +46,7 @@
 ;; too.
 
 (defun org-cliplink-straight-string (s)
-  (mapconcat '(lambda (x) x) (split-string s) " "))
+  (mapconcat #'identity (split-string s) " "))
 
 (defun org-cliplink-extract-title-from-html (html)
   (let ((start (string-match "<title>" html))
