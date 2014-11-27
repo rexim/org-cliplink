@@ -18,6 +18,10 @@ in your init file:
 Then copy any http/https URL to the clipboard, switch to the Emacs
 window and hit `C-x p i`.
 
+# Bugs #
+
+https://github.com/rexim/org-cliplink/issues
+
 # Contribution #
 
 This command doesn't handle some cases (like different encodings and
