@@ -60,6 +60,7 @@
   (let ((replace-table '(("\\[" . "{")
                          ("\\]" . "}")
                          ("&mdash;" . "—")
+                         ("&ndash;" . "–")
                          ("&#39;" . "'")))
         (max-length 77)
         (result (org-cliplink-straight-string title)))
