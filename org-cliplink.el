@@ -1,4 +1,4 @@
-;;; org-cliplink.el --- insert org-mode links by URL from the clipboard
+;;; org-cliplink.el --- insert org-mode links fro URL from the clipboard
 
 ;; Copyright (C) 2014 Alexey Kutepov a.k.a rexim
 
