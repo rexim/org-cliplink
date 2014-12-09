@@ -364,6 +364,7 @@ another sequences in the title of the link")
 
 (defun org-cliplink-straight-string (s)
   (mapconcat #'identity (split-string s) " "))
+
 (defun org-cliplink-extract-title-from-html (html)
   (let ((start (string-match "<title>" html))
         (end (string-match "</title>" html))
