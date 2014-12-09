@@ -45,13 +45,13 @@
 ;; publish it as a separate package in case someone needs this feature
 ;; too.
 
-(defvar org-cliplink-basic-escape-alist
+(defconst org-cliplink-basic-escape-alist
   '(("&quot;" . "\"")             ;; " - double-quote
     ("&amp;" . "&")               ;; & - ampersand
     ("&lt;" . "<")                ;; < - less-than
     ("&gt;" . ">")))              ;; > - greater-than
 
-(defvar org-cliplink-iso8869-1-escape-alist
+(defconst org-cliplink-iso8869-1-escape-alist
   '(("&nbsp;" . "\u00A0")                   ;; non-breaking space
     ("&iexcl;" . "\u00A1") ;; inverted exclamation mark
     ("&cent;" . "\u00A2")  ;; cent sign
@@ -149,7 +149,7 @@
     ("&thorn;" . "\u00FE")  ;; þ - lowercase thorn, Icelandic
     ("&yuml;" . "\u00FF"))) ;; ÿ - lowercase y, umlaut
 
-(defvar org-cliplink-html40-extended-escape-alist
+(defconst org-cliplink-html40-extended-escape-alist
   '( ;; <!-- Latin Extended-B -->
     ("&fnof;" . "\u0192") ;; latin small f with hook = function= florin, U+0192 ISOtech -->
     ;; <!-- Greek -->
@@ -345,7 +345,7 @@
     ;; <!-- rsaquo is proposed but not yet ISO standardized -->
     ("&euro;" . "\u20AC"))) ;; -- euro sign, U+20AC NEW -->
 
-(defvar org-cliplink-numeric-escape-alist
+(defconst org-cliplink-numeric-escape-alist
   (lexical-let ((result nil))
     (dotimes (i 256 result)
       (setq result (cons (cons (format "&#%d;" i)
@@ -358,11 +358,12 @@
           org-cliplink-iso8869-1-escape-alist
           org-cliplink-html40-extended-escape-alist
           '(("\\[" . "{")
-            ("\\]" . "}"))))
+            ("\\]" . "}")))
+  "Contains sequences of characters that should be replaced by
+another sequences in the title of the link")
 
 (defun org-cliplink-straight-string (s)
   (mapconcat #'identity (split-string s) " "))
-
 (defun org-cliplink-extract-title-from-html (html)
   (let ((start (string-match "<title>" html))
         (end (string-match "</title>" html))
@@ -392,6 +393,8 @@
 
 ;;;###autoload
 (defun org-cliplink ()
+  "Takes a URL from the clipboard and inserts an org-mode link
+with a title of a page found by the URL into the current buffer"
   (interactive)
   (let ((dest-buffer (current-buffer))
         (url (substring-no-properties (current-kill 0))))
