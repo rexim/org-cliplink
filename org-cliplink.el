@@ -374,36 +374,45 @@ another sequences in the title of the link")
       nil)))
 
 (defun org-cliplink-prepare-cliplink-title (title)
-  (let ((max-length 77)
-        (result (org-cliplink-straight-string title)))
-    (let ((case-replace nil)
-          (case-fold-search nil))
-      (dolist (x org-cliplink-escape-alist)
-        (setq result (replace-regexp-in-string (car x) (cdr x) result))))
-    (when (> (length result) max-length)
-      (setq result (concat (substring result 0 max-length) "...")))
-    result))
+  (when title
+    (let ((max-length 77)
+          (result (org-cliplink-straight-string title)))
+      (let ((case-replace nil)
+            (case-fold-search nil))
+        (dolist (x org-cliplink-escape-alist)
+          (setq result (replace-regexp-in-string (car x) (cdr x) result))))
+      (when (> (length result) max-length)
+        (setq result (concat (substring result 0 max-length) "...")))
+      result)))
 
-(defun org-cliplink-perform-cliplink (buffer url content)
-  (let* ((decoded-content (decode-coding-string content 'utf-8))
-         (title (org-cliplink-extract-title-from-html decoded-content)))
-    (with-current-buffer buffer
-      (if title
-          (insert (format "[[%s][%s]]" url (org-cliplink-prepare-cliplink-title title)))
-        (insert (format "[[%s]]" url))))))
+(defun org-cliplink-insert-org-mode-link-callback (url title)
+  (if title
+      (insert (format "[[%s][%s]]" url title))
+    (insert (format "[[%s]]" url))))
+
+;;;###autoload
+(defun org-cliplink-retrieve-title (url title-callback)
+  "Calls title-callback with the title of a page found by the
+URL"
+  (let ((dest-buffer (current-buffer)))
+    (url-retrieve
+     url
+     `(lambda (s)
+        (let* ((content (buffer-string))
+               (decoded-content (decode-coding-string content (quote utf-8)))
+               (title (org-cliplink-extract-title-from-html decoded-content)))
+          (with-current-buffer ,dest-buffer
+            (funcall (quote ,title-callback)
+                     ,url (org-cliplink-prepare-cliplink-title title))))))))
 
 ;;;###autoload
 (defun org-cliplink ()
   "Takes a URL from the clipboard and inserts an org-mode link
-with a title of a page found by the URL into the current buffer"
+with the title of a page found by the URL into the current
+buffer"
   (interactive)
-  (let ((dest-buffer (current-buffer))
-        (url (substring-no-properties (current-kill 0))))
-    (url-retrieve
-     url
-     `(lambda (s)
-        (org-cliplink-perform-cliplink ,dest-buffer ,url
-                                       (buffer-string))))))
+  (org-cliplink-retrieve-title (substring-no-properties (current-kill 0))
+                               'org-cliplink-insert-org-mode-link-callback))
 
 (provide 'org-cliplink)
 
