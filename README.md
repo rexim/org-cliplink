@@ -1,4 +1,4 @@
-[![MELPA badge](http://melpa.org/packages/org-cliplink-badge.svg)](http://melpa.org/#/auto-package-update)
+[![MELPA badge](http://melpa.org/packages/org-cliplink-badge.svg)](http://melpa.org/#/org-cliplink)
 
 # org-cliplink #
 
