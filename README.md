@@ -1,4 +1,4 @@
-![http://melpa.org/#/org-cliplink](http://melpa.org/packages/org-cliplink-badge.svg)
+![MELPA badge](http://melpa.org/packages/org-cliplink-badge.svg)
 
 # org-cliplink #
 
