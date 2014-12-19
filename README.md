@@ -1,3 +1,5 @@
+![http://melpa.org/#/org-cliplink](http://melpa.org/packages/org-cliplink-badge.svg)
+
 # org-cliplink #
 
 A simple command that takes a URL from the clipboard and inserts an
