@@ -26,9 +26,8 @@ https://github.com/rexim/org-cliplink/issues
 
 # Contribution #
 
-This command doesn't handle some cases (like different encodings and
-compressed responses) but I do my best to improve it. If you find this
-code useful and want to make a contribution feel free to make a pull
-request. :)
+This command doesn't handle some cases (like different encodings) but
+I do my best to improve it. If you find this code useful and want to
+make a contribution feel free to make a pull request. :)
 
 Thanks.

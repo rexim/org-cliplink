@@ -365,6 +365,24 @@ another sequences in the title of the link")
 (defun org-cliplink-straight-string (s)
   (mapconcat #'identity (split-string s) " "))
 
+(defun org-cliplink-parse-raw-header (raw-header)
+  (let ((start 0)
+        (result-header nil))
+    (while (string-match "^\\(.+?\\): \\(.+\\)$" raw-header start)
+      (let ((header-name (match-string 1 raw-header))
+            (header-value (match-string 2 raw-header)))
+        (setq result-header
+              (cons (cons header-name header-value) result-header))
+        (setq start (match-end 2))))
+    result-header))
+
+(defun org-cliplink-parse-response ()
+  (search-forward "\n\n")
+  (let ((content (buffer-substring (point) (point-max)))
+        (raw-header (buffer-substring (point-min) (- (point) 2))))
+    (cons (org-cliplink-parse-raw-header raw-header)
+          content)))
+
 (defun org-cliplink-extract-title-from-html (html)
   (let ((start (string-match "<title>" html))
         (end (string-match "</title>" html))
@@ -390,6 +408,14 @@ another sequences in the title of the link")
       (insert (format "[[%s][%s]]" url title))
     (insert (format "[[%s]]" url))))
 
+(defun org-cliplink-uncompress-gziped-text (text)
+  (let ((filename (make-temp-file "org-cliplink" nil ".gz")))
+    (write-region text nil filename)
+    (with-auto-compression-mode
+      (with-temp-buffer
+        (insert-file-contents filename)
+        (buffer-string)))))
+
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
   "Calls title-callback with the title of a page found by the
@@ -397,8 +423,12 @@ URL"
   (let ((dest-buffer (current-buffer)))
     (url-retrieve
      url
-     `(lambda (s)
-        (let* ((content (buffer-string))
+     `(lambda (status)
+        (let* ((response (org-cliplink-parse-response))
+               (header (car response))
+               (content (if (string= "gzip" (cdr (assoc "Content-Encoding" header)))
+                            (org-cliplink-uncompress-gziped-text (cdr response))
+                          (cdr response)))
                (decoded-content (decode-coding-string content (quote utf-8)))
                (title (org-cliplink-extract-title-from-html decoded-content)))
           (with-current-buffer ,dest-buffer
