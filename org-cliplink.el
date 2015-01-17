@@ -345,20 +345,18 @@
     ;; <!-- rsaquo is proposed but not yet ISO standardized -->
     ("&euro;" . "\u20AC"))) ;; -- euro sign, U+20AC NEW -->
 
-(defconst org-cliplink-numeric-escape-alist
-  (lexical-let ((result nil))
-    (dotimes (i 256 result)
-      (setq result (cons (cons (format "&#%d;" i)
-                               (char-to-string i))
-                         result)))))
+(defun org-cliplink-escape-numeric-match (s)
+  (char-to-string
+   (string-to-number
+    (match-string 1 s))))
 
 (defvar org-cliplink-escape-alist
   (append org-cliplink-basic-escape-alist
-          org-cliplink-numeric-escape-alist
           org-cliplink-iso8869-1-escape-alist
           org-cliplink-html40-extended-escape-alist
           '(("\\[" . "{")
-            ("\\]" . "}")))
+            ("\\]" . "}")
+            ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match)))
   "Contains sequences of characters that should be replaced by
 another sequences in the title of the link")
 
