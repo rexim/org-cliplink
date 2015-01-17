@@ -356,9 +356,7 @@
           org-cliplink-html40-extended-escape-alist
           '(("\\[" . "{")
             ("\\]" . "}")
-            ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match)))
-  "Contains sequences of characters that should be replaced by
-another sequences in the title of the link")
+            ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match))))
 
 (defun org-cliplink-straight-string (s)
   (mapconcat #'identity (split-string s) " "))
