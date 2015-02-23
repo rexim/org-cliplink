@@ -445,6 +445,22 @@ Example:
                      ,url (org-cliplink-prepare-cliplink-title title))))))))
 
 ;;;###autoload
+(defun org-cliplink-retrieve-title-synchronously (url)
+  (let ((response-buffer (url-retrieve-synchronously url)))
+    (if response-buffer
+      (with-current-buffer response-buffer
+        (message "response-buffer: %s" response-buffer)
+        (let* ((response (org-cliplink-parse-response))
+               (header (car response))
+               (content (if (string= "gzip" (cdr (assoc "Content-Encoding" header)))
+                            (org-cliplink-uncompress-gziped-text (cdr response))
+                          (cdr response)))
+               (decoded-content (decode-coding-string content (quote utf-8)))
+               (title (org-cliplink-extract-title-from-html decoded-content)))
+          (org-cliplink-prepare-cliplink-title title)))
+      (message "Response buffer is nil!"))))
+
+;;;###autoload
 (defun org-cliplink ()
   "Takes a URL from the clipboard and inserts an org-mode link
 with the title of a page found by the URL into the current
