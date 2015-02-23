@@ -414,8 +414,20 @@
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
-  "Calls title-callback with the title of a page found by the
-URL"
+  "Tries to retrieve a title from an HTML page by the given URL
+and calls TITLE-CALLBACK callback with URL and the retrieved
+title as arguments. If it is not possible to retrive the
+title (the HTML page doesn't have a title or URL doesn't point to
+an HTML page at all) the TITLE-CALLBACK callback will be called
+with URL and nil as arguments.
+
+Example:
+  (org-cliplink-retrieve-title
+   \"https://google.com/\"
+   `(lambda (url title)
+      (if title
+          (message \"%s has title %s\" url title)
+        (message \"%s doesn't have title\" url))))"
   (let ((dest-buffer (current-buffer)))
     (url-retrieve
      url
