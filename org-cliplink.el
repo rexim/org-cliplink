@@ -373,6 +373,7 @@
     result-header))
 
 (defun org-cliplink-parse-response ()
+  (goto-char (point-min))
   (search-forward "\n\n")
   (let ((content (buffer-substring (point) (point-max)))
         (raw-header (buffer-substring (point-min) (- (point) 2))))
