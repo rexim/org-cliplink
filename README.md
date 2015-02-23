@@ -20,6 +20,16 @@ in your init file:
 Then copy any http/https URL to the clipboard, switch to the Emacs
 window and hit `C-x p i`.
 
+# Dependencies #
+
+## Windows ##
+
+- GnuTLS - if you use Emacs installation from
+  [the official GNU FTP server](ftp://ftp.gnu.org/gnu/emacs/windows/)
+  you may simply download the latest version of GnuTLS from
+  [here](ftp://ftp.gnutls.org/gcrypt/gnutls/w32/) and copy the content
+  of the downloaded archive to the emacs installation folder.
+
 # Bugs #
 
 https://github.com/rexim/org-cliplink/issues
