@@ -24,11 +24,11 @@ window and hit `C-x p i`.
 
 ## Windows ##
 
-- GnuTLS - if you use Emacs installation from
-  [the official GNU FTP server](ftp://ftp.gnu.org/gnu/emacs/windows/)
-  you may simply download the latest version of GnuTLS from
-  [here](ftp://ftp.gnutls.org/gcrypt/gnutls/w32/) and copy the content
-  of the downloaded archive to the emacs installation folder.
+- GnuTLS — if you use Emacs installation from the official GNU FTP
+  server — ftp://ftp.gnu.org/gnu/emacs/windows/ — you may simply
+  download the latest version of GnuTLS from
+  ftp://ftp.gnutls.org/gcrypt/gnutls/w32/ and copy the content of the
+  downloaded archive to the emacs installation folder.
 
 # Bugs #
 
