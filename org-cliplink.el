@@ -413,6 +413,18 @@
         (insert-file-contents filename)
         (buffer-string)))))
 
+(defun org-cliplink-extract-and-prepare-title-from-current-buffer ()
+  (let* ((response (org-cliplink-parse-response))
+         (header (car response))
+         (content (if (string= "gzip" (cdr (assoc "Content-Encoding" header)))
+                      (org-cliplink-uncompress-gziped-text (cdr response))
+                    (cdr response)))
+         (decoded-content (decode-coding-string content (quote utf-8)))
+         (title (org-cliplink-prepare-cliplink-title
+                 (org-cliplink-extract-title-from-html
+                  decoded-content))))
+    title))
+
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
   "Tries to retrieve a title from an HTML page by the given URL
@@ -433,31 +445,16 @@ Example:
     (url-retrieve
      url
      `(lambda (status)
-        (let* ((response (org-cliplink-parse-response))
-               (header (car response))
-               (content (if (string= "gzip" (cdr (assoc "Content-Encoding" header)))
-                            (org-cliplink-uncompress-gziped-text (cdr response))
-                          (cdr response)))
-               (decoded-content (decode-coding-string content (quote utf-8)))
-               (title (org-cliplink-extract-title-from-html decoded-content)))
+        (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
           (with-current-buffer ,dest-buffer
-            (funcall (quote ,title-callback)
-                     ,url (org-cliplink-prepare-cliplink-title title))))))))
+            (funcall (quote ,title-callback) ,url title)))))))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title-synchronously (url)
   (let ((response-buffer (url-retrieve-synchronously url)))
     (if response-buffer
       (with-current-buffer response-buffer
-        (message "response-buffer: %s" response-buffer)
-        (let* ((response (org-cliplink-parse-response))
-               (header (car response))
-               (content (if (string= "gzip" (cdr (assoc "Content-Encoding" header)))
-                            (org-cliplink-uncompress-gziped-text (cdr response))
-                          (cdr response)))
-               (decoded-content (decode-coding-string content (quote utf-8)))
-               (title (org-cliplink-extract-title-from-html decoded-content)))
-          (org-cliplink-prepare-cliplink-title title)))
+        (org-cliplink-extract-and-prepare-title-from-current-buffer))
       (message "Response buffer is nil!"))))
 
 ;;;###autoload
