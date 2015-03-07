@@ -358,6 +358,21 @@
             ("\\]" . "}")
             ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match))))
 
+(defgroup org-cliplink nil
+  "A simple command that takes a URL from the clipboard and inserts an
+org-mode link with a title of a page found by the URL into the current
+buffer.
+"
+  :prefix "org-cliplink-"
+  :group 'wp
+  :link '(url-link "https://github.com/rexim/org-cliplink"))
+
+(defcustom org-cliplink-max-length 80
+  "Max length of the title. Org-cliplink cuts any title that
+exceeds the limit. Minimum possible value is 4."
+  :group 'org-cliplink
+  :type 'integer)
+
 (defun org-cliplink-straight-string (s)
   (mapconcat #'identity (split-string s) " "))
 
@@ -390,7 +405,9 @@
 
 (defun org-cliplink-prepare-cliplink-title (title)
   (when title
-    (let ((max-length 77)
+    (let ((max-length (if (> org-cliplink-max-length 3)
+                          (- org-cliplink-max-length 3)
+                        77))
           (result (org-cliplink-straight-string title)))
       (let ((case-replace nil)
             (case-fold-search nil))
