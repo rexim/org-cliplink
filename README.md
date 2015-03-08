@@ -1,4 +1,4 @@
-[![MELPA badge](http://melpa.org/packages/org-cliplink-badge.svg)](http://melpa.org/#/org-cliplink)
+[![MELPA badge](http://melpa.org/packages/org-cliplink-badge.svg)](http://melpa.org/#/org-cliplink) [![Build Status](https://travis-ci.org/rexim/org-cliplink.svg)](https://travis-ci.org/rexim/org-cliplink)
 
 # org-cliplink #
 

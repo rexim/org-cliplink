@@ -1,0 +1,9 @@
+language: emacs-lisp
+before-install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq emacs24
+script:
+  - emacs --batch --script run-integration-tests.el
+notifications:
+  email:
+    - reximkut@gmail.com
