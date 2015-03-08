@@ -379,7 +379,7 @@ exceeds the limit. Minimum possible value is 4."
 (defun org-cliplink-parse-raw-header (raw-header)
   (let ((start 0)
         (result-header nil))
-    (while (string-match "^\\(.+?\\): \\(.+\\)$" raw-header start)
+    (while (string-match "^\\(.+?\\): \\(.+?\\)\r?$" raw-header start)
       (let ((header-name (match-string 1 raw-header))
             (header-value (match-string 2 raw-header)))
         (setq result-header
@@ -389,9 +389,9 @@ exceeds the limit. Minimum possible value is 4."
 
 (defun org-cliplink-parse-response ()
   (goto-char (point-min))
-  (search-forward "\n\n")
+  (search-forward-regexp "^\r?$")
   (let ((content (buffer-substring (point) (point-max)))
-        (raw-header (buffer-substring (point-min) (- (point) 2))))
+        (raw-header (buffer-substring (point-min) (- (point) 1))))
     (cons (org-cliplink-parse-raw-header raw-header)
           content)))
 

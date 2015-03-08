@@ -3,7 +3,7 @@ before-install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq emacs24
 script:
-  - emacs --batch --script run-integration-tests.el
+  - ./run-travis-ci.sh
 notifications:
   email:
     - reximkut@gmail.com
