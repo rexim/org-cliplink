@@ -1,7 +1,5 @@
-language: emacs-lisp
-before-install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq emacs24
+install:
+  - sudo add-apt-repository -y ppa:cassou/emacs && sudo apt-get update -qq && sudo apt-get install -qq emacs24
 script:
   - ./run-travis-ci.sh
 notifications:
