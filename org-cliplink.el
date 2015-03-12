@@ -361,8 +361,7 @@
 (defgroup org-cliplink nil
   "A simple command that takes a URL from the clipboard and inserts an
 org-mode link with a title of a page found by the URL into the current
-buffer.
-"
+buffer."
   :prefix "org-cliplink-"
   :group 'wp
   :link '(url-link "https://github.com/rexim/org-cliplink"))
