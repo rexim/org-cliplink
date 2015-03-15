@@ -10,14 +10,14 @@
                         ("Content-type" . "text/html")
                         ("Date" . "Sun, 08 Mar 2015 14:17:14 GMT")
                         ("Server" . "SimpleHTTP/0.6 Python/2.7.9")) .
-                        "\nHere goes body\n"))
+                        "Here goes body\n"))
                      ("test-data/responses/correct-response-without-title" .
                       ((("Last-Modified" . "Sun, 08 Mar 2015 14:06:08 GMT")
                         ("Content-Length" . "199")
                         ("Content-type" . "text/html")
                         ("Date" . "Sun, 08 Mar 2015 14:17:14 GMT")
                         ("Server" . "SimpleHTTP/0.6 Python/2.7.9")) .
-                        "\nHere goes body\n")))))
+                        "Here goes body\n")))))
     (dolist (test-case test-data)
       (message (car test-case))
       (let ((data-file (car test-case))

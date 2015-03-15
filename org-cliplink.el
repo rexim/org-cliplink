@@ -389,8 +389,8 @@ exceeds the limit. Minimum possible value is 4."
 (defun org-cliplink-parse-response ()
   (goto-char (point-min))
   (search-forward-regexp "^\r?$")
-  (let ((content (buffer-substring (point) (point-max)))
-        (raw-header (buffer-substring (point-min) (- (point) 1))))
+  (let ((content (buffer-substring (+ (point) 1) (point-max)))
+        (raw-header (buffer-substring (point-min) (point))))
     (cons (org-cliplink-parse-raw-header raw-header)
           content)))
 
