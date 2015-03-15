@@ -8,9 +8,7 @@ function finish {
 trap finish EXIT
 
 echo "Starting testing server..."
-cd test-data/site
-python -m SimpleHTTPServer 3001 &
-cd ../..
+./run-testing-server.py &
 sleep 1
 
 emacs --batch --no-site-file --no-splash -l ert --script integration-tests.el || exit 1
