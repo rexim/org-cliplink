@@ -4,19 +4,31 @@
 import os
 import ssl
 import threading
+import time
 
 import SimpleHTTPServer
 import SocketServer
 import BaseHTTPServer
+import GzipSimpleHTTPServer
 
 def start_http_server(port):
+    print "Starting HTTP Server..."
     httpd = SocketServer.TCPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.serve_forever()
 
 def start_https_server(port, certificate):
+    print "Starting HTTPS Server..."
     httpd = BaseHTTPServer.HTTPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
     httpd.serve_forever()
+
+def start_gziped_http_server(port):
+    print "Starting Gziped HTTP Server..."
+    httpd = SocketServer.TCPServer(("", port), GzipSimpleHTTPServer.SimpleHTTPRequestHandler)
+    httpd.serve_forever()
+
+def start_gziped_https_server(port, certificate):
+    pass
 
 if __name__ == "__main__":
     script_location = os.path.dirname(os.path.abspath(__file__))
@@ -27,10 +39,12 @@ if __name__ == "__main__":
     print "Serving", os.getcwd(), "directory"
 
     server_threads = [threading.Thread(target = start_http_server, args = (8001,)),
-                      threading.Thread(target = start_https_server, args = (4443, certfile))]
+                      threading.Thread(target = start_https_server, args = (4443, certfile)),
+                      threading.Thread(target = start_gziped_http_server, args = (8002,))]
 
     for thread in server_threads:
+        thread.daemon = True
         thread.start()
 
-    for thread in server_threads:
-        thread.join()
+    while True:
+        time.sleep(1)

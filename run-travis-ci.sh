@@ -2,7 +2,7 @@
 
 function finish {
     echo "Killing testing server..."
-    kill $(jobs -p)
+    kill "$!"
 }
 
 trap finish EXIT

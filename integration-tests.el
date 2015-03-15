@@ -33,4 +33,14 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
+(ert-deftest cliplink-simple-title-by-gziped-http ()
+  (let ((url "http://127.0.0.1:8002/http.html")
+        (expected-outcome "[[http://127.0.0.1:8002/http.html][Hello World]]")
+        (timeout 5))
+    (with-temp-buffer
+      (kill-new url)
+      (org-cliplink)
+      (sleep-for timeout)
+      (should (equal (buffer-string) expected-outcome)))))
+
 (ert-run-tests-batch-and-exit)
