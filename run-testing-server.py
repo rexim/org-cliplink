@@ -28,7 +28,10 @@ def start_gziped_http_server(port):
     httpd.serve_forever()
 
 def start_gziped_https_server(port, certificate):
-    pass
+    print "Starting Gziped HTTPS Server..."
+    httpd = BaseHTTPServer.HTTPServer(("", port), GzipSimpleHTTPServer.SimpleHTTPRequestHandler)
+    httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
+    httpd.serve_forever()
 
 if __name__ == "__main__":
     script_location = os.path.dirname(os.path.abspath(__file__))
@@ -40,7 +43,8 @@ if __name__ == "__main__":
 
     server_threads = [threading.Thread(target = start_http_server, args = (8001,)),
                       threading.Thread(target = start_https_server, args = (4443, certfile)),
-                      threading.Thread(target = start_gziped_http_server, args = (8002,))]
+                      threading.Thread(target = start_gziped_http_server, args = (8002,)),
+                      threading.Thread(target = start_gziped_https_server, args = (4444, certfile))]
 
     for thread in server_threads:
         thread.daemon = True

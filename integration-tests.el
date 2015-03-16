@@ -43,4 +43,14 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
+(ert-deftest cliplink-complex-test ()
+  (let ((url "https://127.0.0.1:4444/html4-escaping.html")
+        (expected-outcome "[[https://127.0.0.1:4444/html4-escaping.html][&{Hello} '{World} α  ]]")
+        (timeout 5))
+    (with-temp-buffer
+      (kill-new url)
+      (org-cliplink)
+      (sleep-for timeout)
+      (should (equal (buffer-string) expected-outcome)))))
+
 (ert-run-tests-batch-and-exit)
