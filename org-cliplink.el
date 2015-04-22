@@ -441,6 +441,29 @@ exceeds the limit. Minimum possible value is 4."
                   decoded-content))))
     title))
 
+(defun org-cliplink-jira-extract-summary-from-current-buffer ()
+  (let* ((response (org-cliplink-parse-response))
+         (json-content (json-read-from-string (cdr response))))
+    (cdr (assoc 'summary (assoc 'fields json-content)))))
+
+;;;###autoload
+(defun org-cliplink-jira-retrieve-summary (jira-base-url jira-username jira-password jira-id summary-callback)
+  (let ((url (concat jira-base-url "/rest/api/2/issue/" jira-id)))
+    (let ((url-request-method "GET")
+          (url-request-extra-headers
+           `(("Content-Type" . "application/json")
+             ("Authorization" . ,(concat
+                                  "Basic "
+                                  (base64-encode-string
+                                   (concat jira-username ":" jira-password))))))
+          (dest-buffer (current-buffer)))
+      (url-retrieve
+       url
+       `(lambda (status)
+          (let ((summary (org-cliplink-jira-extract-summary-from-current-buffer)))
+            (with-current-buffer ,dest-buffer
+              (funcall (quote ,summary-callback) ,jira-id summary))))))))
+
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
   "Tries to retrieve a title from an HTML page by the given URL
