@@ -12,4 +12,4 @@ echo "Starting testing server..."
 sleep 1
 
 emacs --batch --no-site-file --no-splash -l ert --script integration-tests.el || exit 1
-emacs --batch --no-site-file --no-splash -l ert --script unit-tests.el || exit 1
+cask exec ert-runner || exit 1

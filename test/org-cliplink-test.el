@@ -1,5 +1,3 @@
-(require 'ert)
-
 (add-to-list 'load-path ".")
 (load "org-cliplink.el")
 
