@@ -63,7 +63,7 @@ For more information see `C-h f org-cliplink-retrieve-title RET`.
 
 # Bugs #
 
-https://github.com/rexim/org-cliplink/issues
+https://github.com/rexim/org-cliplink/labels/bug
 
 # Contribution #
 
