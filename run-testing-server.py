@@ -13,7 +13,7 @@ import GzipSimpleHTTPServer
 
 def start_http_server(port):
     print "Starting HTTP Server..."
-    httpd = SocketServer.TCPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
+    httpd = BaseHTTPServer.HTTPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.serve_forever()
 
 def start_https_server(port, certificate):
@@ -24,7 +24,7 @@ def start_https_server(port, certificate):
 
 def start_gziped_http_server(port):
     print "Starting Gziped HTTP Server..."
-    httpd = SocketServer.TCPServer(("", port), GzipSimpleHTTPServer.SimpleHTTPRequestHandler)
+    httpd = BaseHTTPServer.HTTPServer(("", port), GzipSimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.serve_forever()
 
 def start_gziped_https_server(port, certificate):
@@ -50,5 +50,6 @@ if __name__ == "__main__":
         thread.daemon = True
         thread.start()
 
+    # This loop allows you to ^C when you run this script standalone
     while True:
         time.sleep(1)
