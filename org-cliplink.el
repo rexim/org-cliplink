@@ -45,6 +45,8 @@
 ;; publish it as a separate package in case someone needs this feature
 ;; too.
 
+(require 'json)
+
 (defconst org-cliplink-basic-escape-alist
   '(("&quot;" . "\"")             ;; " - double-quote
     ("&amp;" . "&")               ;; & - ampersand
