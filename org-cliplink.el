@@ -369,10 +369,18 @@ buffer."
   :link '(url-link "https://github.com/rexim/org-cliplink"))
 
 (defcustom org-cliplink-max-length 80
-  "Max length of the title. Org-cliplink cuts any title that
-exceeds the limit. Minimum possible value is 4."
+  "Max length of the title.
+Org-cliplink cuts any title that exceeds the limit. Minimum
+possible value is 4."
   :group 'org-cliplink
   :type 'integer)
+
+(defcustom org-cliplink-secrets-path "~/.org-cliplink-secrets.el"
+  "Path to file that keeps your org-cliplink related secrets.
+It can be any sensitive information like password to different
+services."
+  :group 'org-cliplink
+  :type 'string)
 
 (defun org-cliplink-straight-string (s)
   (mapconcat #'identity (split-string s) " "))
@@ -443,6 +451,11 @@ exceeds the limit. Minimum possible value is 4."
                   decoded-content))))
     title))
 
+(defun org-cliplink-read-secrets ()
+  (with-temp-buffer
+    (insert-file-contents org-cliplink-secrets-path)
+    (car (read-from-string (buffer-string)))))
+
 (defun org-cliplink-jira-extract-summary-from-current-buffer ()
   (let* ((response (org-cliplink-parse-response))
          (json-content (json-read-from-string (cdr response))))
@@ -465,6 +478,26 @@ exceeds the limit. Minimum possible value is 4."
           (let ((summary (org-cliplink-jira-extract-summary-from-current-buffer)))
             (with-current-buffer ,dest-buffer
               (funcall (quote ,summary-callback) ,jira-id summary))))))))
+
+;;;###autoload
+(defun org-cliplink-jira ()
+  (interactive)
+  (let* ((jira-id (substring-no-properties (current-kill 0)))
+         (jira-secrets (plist-get (org-cliplink-read-secrets) :jira))
+         (jira-base-url (plist-get jira-secrets :base-url))
+         (jira-username (plist-get jira-secrets :username))
+         (jira-password (plist-get jira-secrets :password)))
+    (org-cliplink-jira-retrieve-summary
+     jira-base-url
+     jira-username
+     jira-password
+     jira-id
+     `(lambda (jira-id jira-summary)
+        (insert (format "[[%s/browse/%s][(%s) %s]]"
+                        ,jira-base-url
+                        jira-id
+                        jira-id
+                        jira-summary))))))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
