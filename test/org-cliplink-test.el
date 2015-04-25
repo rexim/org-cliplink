@@ -39,4 +39,13 @@
          '(nil . "{}"))
    (should (not (org-cliplink-jira-extract-summary-from-current-buffer)))))
 
+(ert-deftest org-cliplink-read-secrets-positive-test ()
+  (let ((org-cliplink-secrets-path "./test-data/secrets/org-cliplink-secrets.el"))
+    (should (equal (org-cliplink-read-secrets)
+                   '(:hello (1 2 3))))))
+
+(ert-deftest org-cliplink-read-secrets-negative-test ()
+  (let ((org-cliplink-secrets-path "/path/to/non/existing/secrets"))
+    (should (not (org-cliplink-read-secrets)))))
+
 (ert-run-tests-batch-and-exit)

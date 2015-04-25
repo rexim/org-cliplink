@@ -452,9 +452,10 @@ services."
     title))
 
 (defun org-cliplink-read-secrets ()
-  (with-temp-buffer
-    (insert-file-contents org-cliplink-secrets-path)
-    (car (read-from-string (buffer-string)))))
+  (when (file-exists-p org-cliplink-secrets-path)
+    (with-temp-buffer
+      (insert-file-contents org-cliplink-secrets-path)
+      (car (read-from-string (buffer-string))))))
 
 (defun org-cliplink-jira-extract-summary-from-current-buffer ()
   (let* ((response (org-cliplink-parse-response))
