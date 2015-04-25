@@ -463,7 +463,10 @@ services."
 
 ;;;###autoload
 (defun org-cliplink-jira-retrieve-summary (jira-base-url jira-username jira-password jira-id summary-callback)
-  (let ((url (concat jira-base-url "/rest/api/2/issue/" jira-id)))
+  (let ((url (concat jira-base-url
+                     "/rest/api/2/issue/"
+                     jira-id
+                     "?fields=summary")))
     (let ((url-request-method "GET")
           (url-request-extra-headers
            `(("Content-Type" . "application/json")
