@@ -480,7 +480,10 @@ services."
        `(lambda (status)
           (let ((summary (org-cliplink-jira-extract-summary-from-current-buffer)))
             (with-current-buffer ,dest-buffer
-              (funcall (quote ,summary-callback) ,jira-id summary))))))))
+              (funcall (quote ,summary-callback)
+                       (concat ,jira-base-url "/browse/" ,jira-id)
+                       (org-cliplink-prepare-cliplink-title
+                        (format "(%s) %s" ,jira-id summary))))))))))
 
 ;;;###autoload
 (defun org-cliplink-jira ()
@@ -495,12 +498,7 @@ services."
      jira-username
      jira-password
      jira-id
-     `(lambda (jira-id jira-summary)
-        (insert (format "[[%s/browse/%s][(%s) %s]]"
-                        ,jira-base-url
-                        jira-id
-                        jira-id
-                        jira-summary))))))
+     'org-cliplink-insert-org-mode-link-callback)))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
