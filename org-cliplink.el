@@ -459,7 +459,11 @@ services."
 
 (defun org-cliplink-jira-extract-summary-from-current-buffer ()
   (let* ((response (org-cliplink-parse-response))
-         (json-content (json-read-from-string (cdr response))))
+         (header (car response))
+         (json-content (json-read-from-string
+                        (if (string= "gzip" (cdr (assoc "Content-Encoding" header)))
+                            (org-cliplink-uncompress-gziped-text (cdr response))
+                          (cdr response)))))
     (cdr (assoc 'summary (assoc 'fields json-content)))))
 
 ;;;###autoload

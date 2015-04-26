@@ -53,4 +53,15 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
+(ert-deftest cliplink-jira-support ()
+  (let ((jira-id "CLIPLINK-6222")
+        (expected-outcome "[[https://127.0.0.1:4444/jira/browse/CLIPLINK-6222][(CLIPLINK-6222) JIRA support]]")
+        (timeout 5)
+        (org-cliplink-secrets-path "./test-data/secrets/org-cliplink-jira-secrets.el"))
+    (with-temp-buffer
+      (kill-new jira-id)
+      (org-cliplink-jira)
+      (sleep-for timeout)
+      (should (equal (buffer-string) expected-outcome)))))
+
 (ert-run-tests-batch-and-exit)

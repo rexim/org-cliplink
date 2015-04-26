@@ -13,26 +13,26 @@ import SimpleAuthHandler
 
 
 def start_http_server(port):
-    print "Starting HTTP Server..."
+    print "(%d) Starting HTTP Server..." % port
     httpd = BaseHTTPServer.HTTPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.serve_forever()
 
 
 def start_https_server(port, certificate):
-    print "Starting HTTPS Server..."
+    print "(%d) Starting HTTPS Server..." % port
     httpd = BaseHTTPServer.HTTPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
     httpd.serve_forever()
 
 
 def start_gziped_http_server(port):
-    print "Starting Gziped HTTP Server..."
+    print "(%d) Starting Gziped HTTP Server..." % port
     httpd = BaseHTTPServer.HTTPServer(("", port), GzipSimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.serve_forever()
 
 
 def start_gziped_https_server(port, certificate):
-    print "Starting Gziped HTTPS Server..."
+    print "(%d) Starting Gziped HTTPS Server..." % port
     httpd = BaseHTTPServer.HTTPServer(("", port), GzipSimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
     httpd.serve_forever()
