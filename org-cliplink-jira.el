@@ -31,6 +31,7 @@
 ;; 
 ;; This library adds JIRA support for org-cliplink
 
+(require 'cl)
 (require 'json)
 (require 'org-cliplink)
 
@@ -76,16 +77,23 @@
 ;;;###autoload
 (defun org-cliplink-jira ()
   (interactive)
-  (let* ((jira-id (substring-no-properties (current-kill 0)))
-         (jira-secrets (plist-get (org-cliplink-read-secrets) :jira))
-         (jira-base-url (plist-get jira-secrets :base-url))
-         (jira-username (plist-get jira-secrets :username))
-         (jira-password (plist-get jira-secrets :password)))
-    (org-cliplink-jira-retrieve-summary
-     jira-base-url
-     jira-username
-     jira-password
-     jira-id
-     'org-cliplink-insert-org-mode-link-callback)))
+  (let ((jira-issue-url (substring-no-properties (current-kill 0)))
+        (jira-secrets (plist-get (org-cliplink-read-secrets) :jira)))
+    (dolist (jira-secret jira-secrets)
+      (let* ((jira-base-url (plist-get jira-secret :base-url))
+             (jira-id (org-cliplink-jira-extract-jira-id-from-url
+                       jira-base-url jira-issue-url))
+             (jira-username (plist-get jira-secret :username))
+             (jira-password (plist-get jira-secret :password)))
+        (when jira-id
+          (org-cliplink-jira-retrieve-summary
+           jira-base-url
+           jira-username
+           jira-password
+           jira-id
+           'org-cliplink-insert-org-mode-link-callback)
+          (return jira-id))))))
+
+(provide 'org-cliplink-jira)
 
 ;;; org-cliplink-jira.el ends here
