@@ -23,7 +23,7 @@ window and hit `C-x p i`.
 # Dependencies #
 
 - Emacs version from 24.1 to 24.3 (24.4+ are not officially supported
-  yet due to #34)
+  yet due to [#34](https://github.com/rexim/org-cliplink/issues/34))
 
 ## Windows ##
 
