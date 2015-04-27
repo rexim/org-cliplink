@@ -22,6 +22,9 @@ window and hit `C-x p i`.
 
 # Dependencies #
 
+- Emacs version from 24.1 to 24.3 (24.4+ are not officially supported
+  yet due to #34)
+
 ## Windows ##
 
 - GnuTLS — if you use Emacs installation from the official GNU FTP
