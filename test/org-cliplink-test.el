@@ -27,13 +27,21 @@
           (should (equal (org-cliplink-parse-response) expected-outcome)))))))
 
 
-
 (ert-deftest org-cliplink-read-secrets-positive-test ()
   (let ((org-cliplink-secrets-path "./test-data/secrets/org-cliplink-secrets.el"))
     (should (equal (org-cliplink-read-secrets)
-                   '(:hello (1 2 3))))))
-
-(ert-deftest org-cliplink-read-secrets-negative-test ()
+                   '(:hello (1 2 3)))))
   (let ((org-cliplink-secrets-path "/path/to/non/existing/secrets"))
     (should (not (org-cliplink-read-secrets)))))
 
+(ert-deftest org-cliplink-straight-string-test ()
+  (should (equal (org-cliplink-straight-string "   hello    world   ")
+                 "hello world")))
+
+(ert-deftest org-cliplink-remove-string-prefix-test ()
+  (should (equal (org-cliplink-remove-string-prefix "hello world" "hello")
+                 " world"))
+  (should (equal (org-cliplink-remove-string-prefix "hello" "hello")
+                 ""))
+  (should (not (org-cliplink-remove-string-prefix "foo" "foobar")))
+  (should (not (org-cliplink-remove-string-prefix "hello world" "world"))))

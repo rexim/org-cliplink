@@ -388,6 +388,13 @@ services."
 (defun org-cliplink-straight-string (s)
   (mapconcat #'identity (split-string s) " "))
 
+(defun org-cliplink-remove-string-prefix (s prefix)
+  "Return non-nil if string S starts with BEGINS."
+  (cond ((and (>= (length s) (length prefix))
+              (string-equal (substring s 0 (length prefix)) prefix))
+         (substring s (length prefix)))
+        (t nil)))
+
 (defun org-cliplink-parse-raw-header (raw-header)
   (let ((start 0)
         (result-header nil))

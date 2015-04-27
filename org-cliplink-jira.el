@@ -43,6 +43,12 @@
                           (cdr response)))))
     (cdr (assoc 'summary (assoc 'fields json-content)))))
 
+(defun org-cliplink-jira-extract-jira-id-from-url (jira-base-url url)
+  (let ((url-tail (org-cliplink-remove-string-prefix url jira-base-url)))
+    (when (and url-tail
+               (string-match ".*browse/\\([A-Z]+-[0-9]+\\)" url-tail))
+      (match-string 1 url-tail))))
+
 ;;;###autoload
 (defun org-cliplink-jira-retrieve-summary (jira-base-url jira-username jira-password jira-id summary-callback)
   (let ((url (concat jira-base-url
