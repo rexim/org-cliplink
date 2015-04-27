@@ -3,6 +3,7 @@
 ;; Copyright (C) 2014 Alexey Kutepov a.k.a rexim
 
 ;; Author: Alexey Kutepov <reximkut@gmail.com>
+;; Maintainer: Alexey Kutepov <reximkut@gmail.com>
 ;; URL: http://github.com/rexim/org-cliplink
 ;; Version: 0.2
 
@@ -44,6 +45,8 @@
 ;; This code was a part of my Emacs config almost a year. I decided to
 ;; publish it as a separate package in case someone needs this feature
 ;; too.
+
+;;; Code:
 
 (require 'json)
 
@@ -456,54 +459,6 @@ services."
     (with-temp-buffer
       (insert-file-contents org-cliplink-secrets-path)
       (car (read-from-string (buffer-string))))))
-
-(defun org-cliplink-jira-extract-summary-from-current-buffer ()
-  (let* ((response (org-cliplink-parse-response))
-         (header (car response))
-         (json-content (json-read-from-string
-                        (if (string= "gzip" (cdr (assoc "Content-Encoding" header)))
-                            (org-cliplink-uncompress-gziped-text (cdr response))
-                          (cdr response)))))
-    (cdr (assoc 'summary (assoc 'fields json-content)))))
-
-;;;###autoload
-(defun org-cliplink-jira-retrieve-summary (jira-base-url jira-username jira-password jira-id summary-callback)
-  (let ((url (concat jira-base-url
-                     "/rest/api/2/issue/"
-                     jira-id
-                     "?fields=summary")))
-    (let ((url-request-method "GET")
-          (url-request-extra-headers
-           `(("Content-Type" . "application/json")
-             ("Authorization" . ,(concat
-                                  "Basic "
-                                  (base64-encode-string
-                                   (concat jira-username ":" jira-password))))))
-          (dest-buffer (current-buffer)))
-      (url-retrieve
-       url
-       `(lambda (status)
-          (let ((summary (org-cliplink-jira-extract-summary-from-current-buffer)))
-            (with-current-buffer ,dest-buffer
-              (funcall (quote ,summary-callback)
-                       (concat ,jira-base-url "/browse/" ,jira-id)
-                       (org-cliplink-prepare-cliplink-title
-                        (format "(%s) %s" ,jira-id summary))))))))))
-
-;;;###autoload
-(defun org-cliplink-jira ()
-  (interactive)
-  (let* ((jira-id (substring-no-properties (current-kill 0)))
-         (jira-secrets (plist-get (org-cliplink-read-secrets) :jira))
-         (jira-base-url (plist-get jira-secrets :base-url))
-         (jira-username (plist-get jira-secrets :username))
-         (jira-password (plist-get jira-secrets :password)))
-    (org-cliplink-jira-retrieve-summary
-     jira-base-url
-     jira-username
-     jira-password
-     jira-id
-     'org-cliplink-insert-org-mode-link-callback)))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)

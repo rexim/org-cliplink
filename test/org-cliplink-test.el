@@ -26,18 +26,7 @@
           (insert-file data-file)
           (should (equal (org-cliplink-parse-response) expected-outcome)))))))
 
-(ert-deftest org-cliplink-jira-extract-summary-from-current-buffer-positive-test ()
-  (with-mock
-   (stub org-cliplink-parse-response =>
-         '(nil . "{\"fields\":{\"summary\":\"Hello, World\"}}"))
-   (should (equal (org-cliplink-jira-extract-summary-from-current-buffer)
-                  "Hello, World"))))
 
-(ert-deftest org-cliplink-jira-extract-summary-from-current-buffer-negative-test ()
-  (with-mock
-   (stub org-cliplink-parse-response =>
-         '(nil . "{}"))
-   (should (not (org-cliplink-jira-extract-summary-from-current-buffer)))))
 
 (ert-deftest org-cliplink-read-secrets-positive-test ()
   (let ((org-cliplink-secrets-path "./test-data/secrets/org-cliplink-secrets.el"))
@@ -48,4 +37,3 @@
   (let ((org-cliplink-secrets-path "/path/to/non/existing/secrets"))
     (should (not (org-cliplink-read-secrets)))))
 
-(ert-run-tests-batch-and-exit)

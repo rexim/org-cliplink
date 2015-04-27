@@ -2,6 +2,7 @@
 
 (add-to-list 'load-path ".")
 (load "org-cliplink.el")
+(load "org-cliplink-jira.el")
 
 (ert-deftest cliplink-simple-title-by-http ()
   (let ((url "http://127.0.0.1:8001/http.html")
