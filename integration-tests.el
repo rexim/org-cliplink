@@ -76,13 +76,14 @@
       (should (equal (buffer-string) expected-outcome))))
 
   (let ((jira-issue-url "https://127.0.0.1:8001/jira/browse/CLIPLINK-6222")
-        (expected-outcome "")
         (timeout 5)
         (org-cliplink-secrets-path "./test-data/secrets/org-cliplink-jira-secrets.el"))
     (with-temp-buffer
       (kill-new jira-issue-url)
       (org-cliplink-jira)
       (sleep-for timeout)
-      (should (equal (buffer-string) expected-outcome)))))
+      (should (equal (buffer-string) ""))
+      (with-current-buffer "*Messages*"
+        (should (search-backward "Cannot find credentials in ./test-data/secrets/org-cliplink-jira-secrets.el for https://127.0.0.1:8001/jira/browse/CLIPLINK-6222"))))))
 
 (ert-run-tests-batch-and-exit)

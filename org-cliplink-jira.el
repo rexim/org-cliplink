@@ -79,20 +79,23 @@
   (interactive)
   (let ((jira-issue-url (substring-no-properties (current-kill 0)))
         (jira-secrets (plist-get (org-cliplink-read-secrets) :jira)))
-    (dolist (jira-secret jira-secrets)
-      (let* ((jira-base-url (plist-get jira-secret :base-url))
-             (jira-id (org-cliplink-jira-extract-jira-id-from-url
-                       jira-base-url jira-issue-url))
-             (jira-username (plist-get jira-secret :username))
-             (jira-password (plist-get jira-secret :password)))
-        (when jira-id
-          (org-cliplink-jira-retrieve-summary
-           jira-base-url
-           jira-username
-           jira-password
-           jira-id
-           'org-cliplink-insert-org-mode-link-callback)
-          (return jira-id))))))
+    (unless (dolist (jira-secret jira-secrets)
+              (let* ((jira-base-url (plist-get jira-secret :base-url))
+                     (jira-id (org-cliplink-jira-extract-jira-id-from-url
+                               jira-base-url jira-issue-url))
+                     (jira-username (plist-get jira-secret :username))
+                     (jira-password (plist-get jira-secret :password)))
+                (when jira-id
+                  (org-cliplink-jira-retrieve-summary
+                   jira-base-url
+                   jira-username
+                   jira-password
+                   jira-id
+                   'org-cliplink-insert-org-mode-link-callback)
+                  (return jira-id))))
+      (message "Cannot find credentials in %s for %s"
+               org-cliplink-secrets-path
+               jira-issue-url))))
 
 (provide 'org-cliplink-jira)
 
