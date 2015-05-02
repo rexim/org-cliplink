@@ -479,12 +479,12 @@ services."
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
-  "Tries to retrieve a title from an HTML page by the given URL
-and calls TITLE-CALLBACK callback with URL and the retrieved
-title as arguments. If it is not possible to retrive the
-title (the HTML page doesn't have a title or URL doesn't point to
-an HTML page at all) the TITLE-CALLBACK callback will be called
-with URL and nil as arguments.
+  "Tries to retrieve a title from an HTML page by the given URL.
+Calls TITLE-CALLBACK callback with URL and the retrieved title as
+arguments. If it is not possible to retrive the title (the HTML
+page doesn't have a title or URL doesn't point to an HTML page at
+all) the TITLE-CALLBACK callback will be called with URL and nil
+as arguments.
 
 Example:
   (org-cliplink-retrieve-title
@@ -493,13 +493,27 @@ Example:
       (if title
           (message \"%s has title %s\" url title)
         (message \"%s doesn't have title\" url))))"
-  (let ((dest-buffer (current-buffer)))
-    (url-retrieve
-     url
-     `(lambda (status)
-        (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
-          (with-current-buffer ,dest-buffer
-            (funcall (quote ,title-callback) ,url title)))))))
+  (let ((dest-buffer (current-buffer))
+        (basic-auth (org-cliplink-check-basic-auth-for-url url)))
+    (if basic-auth
+      (let ((url-request-extra-headers
+             `(("Authorization" . ,(concat "Basic "
+                                           (base64-encode-string
+                                            (concat (plist-get basic-auth :username)
+                                                    ":"
+                                                    (plist-get basic-auth :password))))))))
+        (url-retrieve
+         url
+         `(lambda (status)
+            (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
+              (with-current-buffer ,dest-buffer
+                (funcall (quote ,title-callback) ,url title))))))
+      (url-retrieve
+       url
+       `(lambda (status)
+          (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
+            (with-current-buffer ,dest-buffer
+              (funcall (quote ,title-callback) ,url title))))))))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title-synchronously (url)
