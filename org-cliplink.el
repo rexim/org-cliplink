@@ -468,6 +468,13 @@ services."
       (insert-file-contents org-cliplink-secrets-path)
       (car (read-from-string (buffer-string))))))
 
+(defun org-cliplink-check-basic-auth-for-url (url)
+  (let ((basic-auth-secrets (plist-get (org-cliplink-read-secrets)
+                                       :basic-auth)))
+    (dolist (secret basic-auth-secrets)
+      (when (string-match (plist-get secret :url-regexp) url)
+        (return secret)))))
+
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
   "Tries to retrieve a title from an HTML page by the given URL
