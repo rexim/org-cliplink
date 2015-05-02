@@ -7,14 +7,16 @@ import threading
 import time
 
 import SimpleHTTPServer
-import SocketServer
 import BaseHTTPServer
 import GzipSimpleHTTPServer
+import SimpleAuthHandler
+
 
 def start_http_server(port):
     print "Starting HTTP Server..."
     httpd = BaseHTTPServer.HTTPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.serve_forever()
+
 
 def start_https_server(port, certificate):
     print "Starting HTTPS Server..."
@@ -22,15 +24,23 @@ def start_https_server(port, certificate):
     httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
     httpd.serve_forever()
 
+
 def start_gziped_http_server(port):
     print "Starting Gziped HTTP Server..."
     httpd = BaseHTTPServer.HTTPServer(("", port), GzipSimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.serve_forever()
 
+
 def start_gziped_https_server(port, certificate):
     print "Starting Gziped HTTPS Server..."
     httpd = BaseHTTPServer.HTTPServer(("", port), GzipSimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
+    httpd.serve_forever()
+
+
+def start_http_server_with_basic_auth(port):
+    print "(%d) Starting HTTP Server with Basic Auth" % port
+    httpd = BaseHTTPServer.HTTPServer(("", port), SimpleAuthHandler.SimpleAuthHandler)
     httpd.serve_forever()
 
 if __name__ == "__main__":
@@ -44,7 +54,8 @@ if __name__ == "__main__":
     server_threads = [threading.Thread(target = start_http_server, args = (8001,)),
                       threading.Thread(target = start_https_server, args = (4443, certfile)),
                       threading.Thread(target = start_gziped_http_server, args = (8002,)),
-                      threading.Thread(target = start_gziped_https_server, args = (4444, certfile))]
+                      threading.Thread(target = start_gziped_https_server, args = (4444, certfile)),
+                      threading.Thread(target = start_http_server_with_basic_auth, args = (8003,))]
 
     for thread in server_threads:
         thread.daemon = True
