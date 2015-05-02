@@ -364,6 +364,9 @@
             ("\\]" . "}")
             ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match))))
 
+(defvar org-cliplink-block-authorization nil
+  "Flag whether to block url.el's usual interactive authorisation procedure")
+
 (defgroup org-cliplink nil
   "A simple command that takes a URL from the clipboard and inserts an
 org-mode link with a title of a page found by the URL into the current
@@ -385,6 +388,11 @@ It can be any sensitive information like password to different
 services."
   :group 'org-cliplink
   :type 'string)
+
+(defadvice url-http-handle-authentication (around org-cliplink-fix)
+  (unless org-cliplink-block-authorization
+    ad-do-it))
+(ad-activate 'url-http-handle-authentication)
 
 (defun org-cliplink-straight-string (s)
   (mapconcat #'identity (split-string s) " "))
@@ -495,7 +503,8 @@ Example:
   (let ((dest-buffer (current-buffer))
         (basic-auth (org-cliplink-check-basic-auth-for-url url)))
     (if basic-auth
-      (let ((url-request-extra-headers
+      (let ((org-cliplink-block-authorization t)
+            (url-request-extra-headers
              `(("Authorization" . ,(concat "Basic "
                                            (base64-encode-string
                                             (concat (plist-get basic-auth :username)
