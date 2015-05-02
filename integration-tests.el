@@ -3,7 +3,7 @@
 (add-to-list 'load-path ".")
 (load "org-cliplink.el")
 
-(ert-deftest cliplink-simple-title-by-http ()
+(ert-deftest org-cliplink-simple-title--http ()
   (let ((url "http://127.0.0.1:8001/http.html")
         (expected-outcome "[[http://127.0.0.1:8001/http.html][Hello World]]")
         (timeout 5))
@@ -13,7 +13,7 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
-(ert-deftest cliplink-html4-entity-escaping ()
+(ert-deftest org-cliplink-escape-title--http ()
   (let ((url "http://127.0.0.1:8001/html4-escaping.html")
         (expected-outcome "[[http://127.0.0.1:8001/html4-escaping.html][&{Hello} '{World} α  ]]")
         (timeout 5))
@@ -23,7 +23,7 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
-(ert-deftest cliplink-simple-title-by-https ()
+(ert-deftest org-cliplink-simple-title--https ()
   (let ((url "https://127.0.0.1:4443/http.html")
         (expected-outcome "[[https://127.0.0.1:4443/http.html][Hello World]]")
         (timeout 5))
@@ -33,7 +33,7 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
-(ert-deftest cliplink-simple-title-by-gziped-http ()
+(ert-deftest org-cliplink-simple-title--gziped-http ()
   (let ((url "http://127.0.0.1:8002/http.html")
         (expected-outcome "[[http://127.0.0.1:8002/http.html][Hello World]]")
         (timeout 5))
@@ -43,10 +43,32 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
-(ert-deftest cliplink-complex-test ()
+(ert-deftest org-cliplink-escape-title--gziped-https ()
   (let ((url "https://127.0.0.1:4444/html4-escaping.html")
         (expected-outcome "[[https://127.0.0.1:4444/html4-escaping.html][&{Hello} '{World} α  ]]")
         (timeout 5))
+    (with-temp-buffer
+      (kill-new url)
+      (org-cliplink)
+      (sleep-for timeout)
+      (should (equal (buffer-string) expected-outcome)))))
+
+(ert-deftest org-cliplink-simple-title--http-with-basic-auth ()
+  (let ((url "http://127.0.0.1:8003/http.html")
+        (expected-outcome "[[http://127.0.0.1:8003/http.html][Hello World]]")
+        (timeout 5)
+        (org-cliplink-secrets-path "./test-data/secrets/org-cliplink-basic-auth-it.el"))
+    (with-temp-buffer
+      (kill-new url)
+      (org-cliplink)
+      (sleep-for timeout)
+      (should (equal (buffer-string) expected-outcome)))))
+
+(ert-deftest org-cliplink-simple-title--https-with-basic-auth ()
+  (let ((url "https://127.0.0.1:4445/http.html")
+        (expected-outcome "[[https://127.0.0.1:4445/http.html][Hello World]]")
+        (timeout 5)
+        (org-cliplink-secrets-path "./test-data/secrets/org-cliplink-basic-auth-it.el"))
     (with-temp-buffer
       (kill-new url)
       (org-cliplink)

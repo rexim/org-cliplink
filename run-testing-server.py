@@ -39,8 +39,15 @@ def start_gziped_https_server(port, certificate):
 
 
 def start_http_server_with_basic_auth(port):
-    print "(%d) Starting HTTP Server with Basic Auth" % port
+    print "(%d) Starting HTTP Server with Basic Auth..." % port
     httpd = BaseHTTPServer.HTTPServer(("", port), SimpleAuthHandler.SimpleAuthHandler)
+    httpd.serve_forever()
+
+
+def start_https_server_with_basic_auth(port, certificate):
+    print "(%d) Starting HTTPS Server with Basic Auth..." % port
+    httpd = BaseHTTPServer.HTTPServer(("", port), SimpleAuthHandler.SimpleAuthHandler)
+    httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
     httpd.serve_forever()
 
 if __name__ == "__main__":
@@ -55,7 +62,8 @@ if __name__ == "__main__":
                       threading.Thread(target = start_https_server, args = (4443, certfile)),
                       threading.Thread(target = start_gziped_http_server, args = (8002,)),
                       threading.Thread(target = start_gziped_https_server, args = (4444, certfile)),
-                      threading.Thread(target = start_http_server_with_basic_auth, args = (8003,))]
+                      threading.Thread(target = start_http_server_with_basic_auth, args = (8003,)),
+                      threading.Thread(target = start_https_server_with_basic_auth, args = (4445, certfile))]
 
     for thread in server_threads:
         thread.daemon = True
