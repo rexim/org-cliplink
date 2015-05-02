@@ -3,6 +3,7 @@
 ;; Copyright (C) 2014 Alexey Kutepov a.k.a rexim
 
 ;; Author: Alexey Kutepov <reximkut@gmail.com>
+;; Maintainer: Alexey Kutepov <reximkut@gmail.com>
 ;; URL: http://github.com/rexim/org-cliplink
 ;; Version: 0.2
 
@@ -44,6 +45,11 @@
 ;; This code was a part of my Emacs config almost a year. I decided to
 ;; publish it as a separate package in case someone needs this feature
 ;; too.
+
+;;; Code:
+
+(require 'cl)
+(require 'em-glob)
 
 (defconst org-cliplink-basic-escape-alist
   '(("&quot;" . "\"")             ;; " - double-quote
@@ -358,6 +364,9 @@
             ("\\]" . "}")
             ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match))))
 
+(defvar org-cliplink-block-authorization nil
+  "Flag whether to block url.el's usual interactive authorisation procedure")
+
 (defgroup org-cliplink nil
   "A simple command that takes a URL from the clipboard and inserts an
 org-mode link with a title of a page found by the URL into the current
@@ -367,13 +376,33 @@ buffer."
   :link '(url-link "https://github.com/rexim/org-cliplink"))
 
 (defcustom org-cliplink-max-length 80
-  "Max length of the title. Org-cliplink cuts any title that
-exceeds the limit. Minimum possible value is 4."
+  "Max length of the title.
+Org-cliplink cuts any title that exceeds the limit. Minimum
+possible value is 4."
   :group 'org-cliplink
   :type 'integer)
 
+(defcustom org-cliplink-secrets-path "~/.org-cliplink-secrets.el"
+  "Path to file that keeps your org-cliplink related secrets.
+It can be any sensitive information like password to different
+services."
+  :group 'org-cliplink
+  :type 'string)
+
+(defadvice url-http-handle-authentication (around org-cliplink-fix)
+  (unless org-cliplink-block-authorization
+    ad-do-it))
+(ad-activate 'url-http-handle-authentication)
+
 (defun org-cliplink-straight-string (s)
   (mapconcat #'identity (split-string s) " "))
+
+(defun org-cliplink-remove-string-prefix (s prefix)
+  "Return non-nil if string S starts with BEGINS."
+  (cond ((and (>= (length s) (length prefix))
+              (string-equal (substring s 0 (length prefix)) prefix))
+         (substring s (length prefix)))
+        (t nil)))
 
 (defun org-cliplink-parse-raw-header (raw-header)
   (let ((start 0)
@@ -441,14 +470,28 @@ exceeds the limit. Minimum possible value is 4."
                   decoded-content))))
     title))
 
+(defun org-cliplink-read-secrets ()
+  (when (file-exists-p org-cliplink-secrets-path)
+    (with-temp-buffer
+      (insert-file-contents org-cliplink-secrets-path)
+      (car (read-from-string (buffer-string))))))
+
+(defun org-cliplink-check-basic-auth-for-url (url)
+  (let ((basic-auth-secrets (plist-get (org-cliplink-read-secrets)
+                                       :basic-auth)))
+    (dolist (secret basic-auth-secrets)
+      (when (string-match (eshell-glob-regexp
+                           (plist-get secret :url-pattern)) url)
+        (return secret)))))
+
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
-  "Tries to retrieve a title from an HTML page by the given URL
-and calls TITLE-CALLBACK callback with URL and the retrieved
-title as arguments. If it is not possible to retrive the
-title (the HTML page doesn't have a title or URL doesn't point to
-an HTML page at all) the TITLE-CALLBACK callback will be called
-with URL and nil as arguments.
+  "Tries to retrieve a title from an HTML page by the given URL.
+Calls TITLE-CALLBACK callback with URL and the retrieved title as
+arguments. If it is not possible to retrive the title (the HTML
+page doesn't have a title or URL doesn't point to an HTML page at
+all) the TITLE-CALLBACK callback will be called with URL and nil
+as arguments.
 
 Example:
   (org-cliplink-retrieve-title
@@ -457,13 +500,28 @@ Example:
       (if title
           (message \"%s has title %s\" url title)
         (message \"%s doesn't have title\" url))))"
-  (let ((dest-buffer (current-buffer)))
-    (url-retrieve
-     url
-     `(lambda (status)
-        (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
-          (with-current-buffer ,dest-buffer
-            (funcall (quote ,title-callback) ,url title)))))))
+  (let ((dest-buffer (current-buffer))
+        (basic-auth (org-cliplink-check-basic-auth-for-url url)))
+    (if basic-auth
+      (let ((org-cliplink-block-authorization t)
+            (url-request-extra-headers
+             `(("Authorization" . ,(concat "Basic "
+                                           (base64-encode-string
+                                            (concat (plist-get basic-auth :username)
+                                                    ":"
+                                                    (plist-get basic-auth :password))))))))
+        (url-retrieve
+         url
+         `(lambda (status)
+            (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
+              (with-current-buffer ,dest-buffer
+                (funcall (quote ,title-callback) ,url title))))))
+      (url-retrieve
+       url
+       `(lambda (status)
+          (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
+            (with-current-buffer ,dest-buffer
+              (funcall (quote ,title-callback) ,url title))))))))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title-synchronously (url)
