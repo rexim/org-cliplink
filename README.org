@@ -52,7 +52,7 @@
    To run unit tests:
 
    #+BEGIN_SRC bash
-     $ cask exec ert-runner init
+     $ cask # only once to download development dependencies
      $ cask exec ert-runner
    #+END_SRC
 
@@ -73,7 +73,7 @@
      $ ./run-testing-server.py
    #+END_SRC
 
-   It requires python 2.7.6+. It will server ~test-data/site~ on
+   It requires Python 2.7.6+. It will serve ~test-data/site~ folder on
    different port with different features (like HTTPS, Gziped content,
    Basic Auth, etc.).
 
