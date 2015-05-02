@@ -74,8 +74,8 @@
    #+END_SRC
 
    It requires Python 2.7.6+. It will serve ~test-data/site~ folder on
-   different port with different features (like HTTPS, Gziped content,
-   Basic Auth, etc.).
+   different ports with different features (like HTTPS, Gziped
+   content, Basic Auth, etc.).
 
    To stop the server just ~^C~ it.
 
