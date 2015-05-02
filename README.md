@@ -33,37 +33,6 @@ window and hit `C-x p i`.
   ftp://ftp.gnutls.org/gcrypt/gnutls/w32/ and copy the content of the
   downloaded archive to the emacs installation folder.
 
-# Custom commands #
-
-It is possible to create your own `org-cliplink`-like commands with
-the `org-cliplink-retrieve-title` function. For example:
-
-    (org-cliplink-retrieve-title
-     "https://google.com/"
-     `(lambda (url title)
-        (if title
-            (message "%s has title %s" url title)
-          (message "%s doesn't have title" url))))
-
-I use it for making org-mode tasks from URLs. Here is some code from
-my Emacs config:
-
-    (defun rc/cliplink-task ()
-      (interactive)
-      (org-cliplink-retrieve-title
-       (substring-no-properties (current-kill 0))
-       '(lambda (url title)
-          (insert (concat "* TODO " title
-                          "\n  [[" url "][" title "]]")))))
-
-     (global-set-key (kbd "C-x p t") 'rc/cliplink-task)
-
-So when I browse the Web and see an interesting article that I want to
-read later I just copy its URL to the clipboard, switch to my org-mode
-files with personal notes and hit `C-x p t`.
-
-For more information see `C-h f org-cliplink-retrieve-title RET`.
-
 # Bugs #
 
 https://github.com/rexim/org-cliplink/labels/bug
