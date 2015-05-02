@@ -8,7 +8,7 @@ and HEAD requests in a fairly straightforward manner.
 
 __version__ = "0.6"
 
-__all__ = ["SimpleHTTPRequestHandler"]
+__all__ = ["GzipSimpleHTTPServer"]
 
 import os
 import posixpath
@@ -25,7 +25,7 @@ except ImportError:
 import gzip
 
 
-class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class GzipSimpleHTTPServer(BaseHTTPServer.BaseHTTPRequestHandler):
 
     """Simple HTTP request handler with GET and HEAD commands.
 
@@ -215,7 +215,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         })
 
 
-def test(HandlerClass = SimpleHTTPRequestHandler,
+def test(HandlerClass = GzipSimpleHTTPServer,
          ServerClass = BaseHTTPServer.HTTPServer):
     BaseHTTPServer.test(HandlerClass, ServerClass)
 
