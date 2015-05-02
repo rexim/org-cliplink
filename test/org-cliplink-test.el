@@ -49,5 +49,5 @@
 (ert-deftest org-cliplink-check-basic-auth-for-url-test ()
   (let ((org-cliplink-secrets-path "./test-data/secrets/org-cliplink-basic-auth-secrets.el"))
     (should (equal (org-cliplink-check-basic-auth-for-url "http://rexim.me/test")
-                   '(:url-regexp "http://rexim.me/.*" :username "horta" :password "hell")))
+                   '(:url-pattern "http://rexim.me/*" :username "horta" :password "hell")))
     (should (not (org-cliplink-check-basic-auth-for-url "http://fornever.me/test")))))

@@ -50,6 +50,7 @@
 
 (require 'cl)
 (require 'json)
+(require 'em-glob)
 
 (defconst org-cliplink-basic-escape-alist
   '(("&quot;" . "\"")             ;; " - double-quote
@@ -472,7 +473,8 @@ services."
   (let ((basic-auth-secrets (plist-get (org-cliplink-read-secrets)
                                        :basic-auth)))
     (dolist (secret basic-auth-secrets)
-      (when (string-match (plist-get secret :url-regexp) url)
+      (when (string-match (eshell-glob-regexp
+                           (plist-get secret :url-pattern)) url)
         (return secret)))))
 
 ;;;###autoload
