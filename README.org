@@ -37,11 +37,55 @@
 
   https://github.com/rexim/org-cliplink/labels/bug
 
-* Contribution
+* Development
 
-  This command doesn't handle some cases (like different encodings) but
-  I do my best to improve it. If you find this code useful and want to
-  make a contribution feel free to make a pull request. :)
-  
-  Thanks.
+  1. open ~org-cliplink.el~ in Emacs;
+  2. change something;
+  3. ~M-x eval-buffer RET~;
+  4. manual testing;
+  5. go to 3 until it's done;
+
+** Automated testing
+
+   For automated testing you need to install [[http://cask.readthedocs.org/en/latest/][Cask]] first.
+
+   To run unit tests:
+
+   #+BEGIN_SRC bash
+     $ cask exec ert-runner init
+     $ cask exec ert-runner
+   #+END_SRC
+
+   To run integration and unit tests together:
+
+   #+BEGIN_SRC bash
+     $ ./run-travis-ci.sh
+   #+END_SRC
+
+   This exact script is run on every push to [[https://github.com/rexim/org-cliplink][org-cliplink GitHub repo]]
+   (that's why it's called ~run-travis-ci.sh~). This script starts up
+   a testing web-server, executes integrations tests defined in
+   ~integration-tests.el~ and executes unit tests after that.
+
+   You can start the testing web-server by yourself:
+
+   #+BEGIN_SRC bash
+     $ ./run-testing-server.py
+   #+END_SRC
+
+   It requires python 2.7.6+. It will server ~test-data/site~ on
+   different port with different features (like HTTPS, Gziped content,
+   Basic Auth, etc.).
+
+   To stop the server just ~^C~ it.
+
+   The automated testing stuff was tested only under Linux.
+
+** Contribution
+
+   This command doesn't handle some cases (like different encodings) but
+   I do my best to improve it. If you find this code useful and want to
+   make a contribution I'm waiting for your pull requests. :)
+   
+   Thanks.
 
