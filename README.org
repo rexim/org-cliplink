@@ -67,7 +67,7 @@
    a testing web-server, executes integrations tests defined in
    ~integration-tests.el~ and executes unit tests after that.
 
-   You can start the testing web-server by yourself:
+   You can start the testing web-server standalone:
 
    #+BEGIN_SRC bash
      $ ./run-testing-server.py
