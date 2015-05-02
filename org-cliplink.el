@@ -49,7 +49,6 @@
 ;;; Code:
 
 (require 'cl)
-(require 'json)
 (require 'em-glob)
 
 (defconst org-cliplink-basic-escape-alist
