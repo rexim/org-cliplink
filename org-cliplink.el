@@ -1,4 +1,4 @@
-;;; org-cliplink.el --- insert org-mode link for URL from the clipboard
+;;; org-cliplink.el --- insert org-mode links from the clipboard
 
 ;; Copyright (C) 2014 Alexey Kutepov a.k.a rexim
 
@@ -484,6 +484,10 @@ services."
                            (plist-get secret :url-pattern)) url)
         (return secret)))))
 
+(defun org-cliplink-credentials-to-basic-auth (username password)
+  (concat "Basic " (base64-encode-string
+                    (concat username ":" password))))
+
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
   "Tries to retrieve a title from an HTML page by the given URL.
@@ -500,28 +504,22 @@ Example:
       (if title
           (message \"%s has title %s\" url title)
         (message \"%s doesn't have title\" url))))"
-  (let ((dest-buffer (current-buffer))
-        (basic-auth (org-cliplink-check-basic-auth-for-url url)))
+  (let* ((dest-buffer (current-buffer))
+         (basic-auth (org-cliplink-check-basic-auth-for-url url))
+         (url-retrieve-callback
+          `(lambda (status)
+             (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
+               (with-current-buffer ,dest-buffer
+                 (funcall (quote ,title-callback) ,url title))))))
     (if basic-auth
-      (let ((org-cliplink-block-authorization t)
-            (url-request-extra-headers
-             `(("Authorization" . ,(concat "Basic "
-                                           (base64-encode-string
-                                            (concat (plist-get basic-auth :username)
-                                                    ":"
-                                                    (plist-get basic-auth :password))))))))
-        (url-retrieve
-         url
-         `(lambda (status)
-            (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
-              (with-current-buffer ,dest-buffer
-                (funcall (quote ,title-callback) ,url title))))))
-      (url-retrieve
-       url
-       `(lambda (status)
-          (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
-            (with-current-buffer ,dest-buffer
-              (funcall (quote ,title-callback) ,url title))))))))
+      (let* ((org-cliplink-block-authorization t)
+             (basic-auth-username (plist-get basic-auth :username))
+             (basic-auth-password (plist-get basic-auth :password))
+             (url-request-extra-headers
+              `(("Authorization" . ,(org-cliplink-credentials-to-basic-auth
+                                     basic-auth-username basic-auth-password)))))
+        (url-retrieve url url-retrieve-callback))
+      (url-retrieve url url-retrieve-callback))))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title-synchronously (url)

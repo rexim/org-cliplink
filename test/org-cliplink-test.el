@@ -51,3 +51,16 @@
     (should (equal (org-cliplink-check-basic-auth-for-url "http://rexim.me/test")
                    '(:url-pattern "http://rexim.me/*" :username "horta" :password "hell")))
     (should (not (org-cliplink-check-basic-auth-for-url "http://fornever.me/test")))))
+
+(ert-deftest org-cliplink-credentials-to-basic-auth-test ()
+  (should (equal "Basic aGVsbG86d29ybGQ="
+                 (org-cliplink-credentials-to-basic-auth "hello" "world"))))
+
+(ert-deftest org-cliplink-extract-and-prepare-title-from-current-buffer-test ()
+  (with-mock
+   (stub org-cliplink-parse-response =>
+         '(nil . "<title>hello</title>"))
+   (stub org-cliplink-uncompress-gziped-text =>
+         (error "org-cliplink-uncompress-gziped-text: This function should not be invoked"))
+   (should (equal "hello"
+                  (org-cliplink-extract-and-prepare-title-from-current-buffer)))))
