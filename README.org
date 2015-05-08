@@ -80,7 +80,7 @@
 
    To stop the server just ~^C~ it.
 
-   The automated testing stuff was tested only under Linux.
+   The automated testing stuff was tested only under Linux so far.
 
 ** Contribution
 
