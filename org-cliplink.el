@@ -424,19 +424,21 @@ services."
         (substring html (+ start chars-to-skip) end)
       nil)))
 
-(defun org-cliplink-prepare-cliplink-title (title)
-  (when title
-    (let ((max-length (if (> org-cliplink-max-length 3)
-                          (- org-cliplink-max-length 3)
-                        77))
-          (result (org-cliplink-straight-string title)))
-      (let ((case-replace nil)
-            (case-fold-search nil))
-        (dolist (x org-cliplink-escape-alist)
-          (setq result (replace-regexp-in-string (car x) (cdr x) result))))
-      (when (> (length result) max-length)
-        (setq result (concat (substring result 0 max-length) "...")))
-      result)))
+(defun org-cliplink-escape-html4 (s)
+  (when s
+    (let ((case-replace nil)
+          (case-fold-search nil)
+          (result s))
+      (dolist (x org-cliplink-escape-alist result)
+        (setq result (replace-regexp-in-string (car x) (cdr x) result))))))
+
+(defun org-cliplink-elide-string (s)
+  (let ((max-length (if (> org-cliplink-max-length 3)
+                        org-cliplink-max-length
+                      80)))
+      (if (> (length s) max-length)
+          (concat (substring s 0 (- max-length 3)) "...")
+        s)))
 
 (defun org-cliplink-insert-org-mode-link-callback (url title)
   (if title
@@ -457,11 +459,12 @@ services."
          (content (if (string= "gzip" (cdr (assoc "Content-Encoding" header)))
                       (org-cliplink-uncompress-gziped-text (cdr response))
                     (cdr response)))
-         (decoded-content (decode-coding-string content (quote utf-8)))
-         (title (org-cliplink-prepare-cliplink-title
-                 (org-cliplink-extract-title-from-html
-                  decoded-content))))
-    title))
+         (decoded-content (decode-coding-string content (quote utf-8))))
+    (org-cliplink-elide-string
+     (org-cliplink-escape-html4
+      (org-cliplink-straight-string
+       (org-cliplink-extract-title-from-html
+        decoded-content))))))
 
 (defun org-cliplink-read-secrets ()
   (when (file-exists-p org-cliplink-secrets-path)

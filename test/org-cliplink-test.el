@@ -56,3 +56,23 @@
          (error "org-cliplink-uncompress-gziped-text: This function should not be invoked"))
    (should (equal "hello"
                   (org-cliplink-extract-and-prepare-title-from-current-buffer)))))
+
+(ert-deftest org-cliplink-escape-html4-test ()
+  (should (equal "&{Hello} '{World} α  "
+                 (org-cliplink-escape-html4
+                  "&amp;[Hello] &#39;[World] &alpha; &nbsp;")))
+  (should (not (org-cliplink-escape-html4 nil))))
+
+(ert-deftest org-cliplink-elide-string-test ()
+  (should (not (org-cliplink-elide-string nil)))
+  (let ((org-cliplink-max-length 5))
+    (should (equal "test" (org-cliplink-elide-string "test")))
+    (should (equal "hello" (org-cliplink-elide-string "hello")))
+    (should (equal "tr..." (org-cliplink-elide-string "trinitrotoluene"))))
+  (let ((org-cliplink-max-length 3))
+    (should (equal "hello" (org-cliplink-elide-string "hello")))
+    (should (equal (make-string 80 ?a)
+                   (org-cliplink-elide-string (make-string 80 ?a))))
+    (should (equal (concat (make-string 77 ?a)
+                           (make-string 3 ?.))
+                   (org-cliplink-elide-string (make-string 81 ?a))))))
