@@ -3,6 +3,16 @@
 (add-to-list 'load-path ".")
 (load "org-cliplink.el")
 
+(ert-deftest org-cliplink-without-title--http ()
+  (let ((url "http://127.0.0.1:8001/without-title.html")
+        (expected-outcome "[[http://127.0.0.1:8001/without-title.html]]")
+        (timeout 5))
+    (with-temp-buffer
+      (kill-new url)
+      (org-cliplink)
+      (sleep-for timeout)
+      (should (equal (buffer-string) expected-outcome)))))
+
 (ert-deftest org-cliplink-simple-title--http ()
   (let ((url "http://127.0.0.1:8001/http.html")
         (expected-outcome "[[http://127.0.0.1:8001/http.html][Hello World]]")

@@ -395,7 +395,8 @@ services."
 (ad-activate 'url-http-handle-authentication)
 
 (defun org-cliplink-straight-string (s)
-  (mapconcat #'identity (split-string s) " "))
+  (when s
+    (mapconcat #'identity (split-string s) " ")))
 
 (defun org-cliplink-parse-raw-header (raw-header)
   (let ((start 0)
