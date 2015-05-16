@@ -35,6 +35,7 @@
     (should (not (org-cliplink-read-secrets)))))
 
 (ert-deftest org-cliplink-straight-string-test ()
+  (should (not (org-cliplink-straight-string nil)))
   (should (equal (org-cliplink-straight-string "   hello    world   ")
                  "hello world")))
 
