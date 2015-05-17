@@ -1,4 +1,4 @@
-;;; org-cliplink.el --- insert org-mode links from the clipboard
+;;; org-cliplink.el --- insert org-mode links from the clipboard -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2014 Alexey Kutepov a.k.a rexim
 
@@ -503,11 +503,17 @@ Example:
         (message \"%s doesn't have title\" url))))"
   (let* ((dest-buffer (current-buffer))
          (basic-auth (org-cliplink-check-basic-auth-for-url url))
+         ;; Sometimes url-retrieve invokes the callback multiple
+         ;; times. It looks like a bug in url.el. For more information
+         ;; see https://github.com/rexim/org-cliplink/issues/34
+         (block-title-callback-invocation nil)
          (url-retrieve-callback
-          `(lambda (status)
-             (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
-               (with-current-buffer ,dest-buffer
-                 (funcall (quote ,title-callback) ,url title))))))
+          (lambda (status)
+            (when (not block-title-callback-invocation)
+              (setq block-title-callback-invocation t)
+              (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
+                (with-current-buffer dest-buffer
+                  (funcall title-callback url title)))))))
     (if basic-auth
       (let* ((org-cliplink-block-authorization t)
              (basic-auth-username (plist-get basic-auth :username))
