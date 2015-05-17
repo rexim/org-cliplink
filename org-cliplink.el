@@ -1,5 +1,4 @@
-;;; -*- lexical-binding: t -*-
-;;; org-cliplink.el --- insert org-mode links from the clipboard
+;;; org-cliplink.el --- insert org-mode links from the clipboard -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2014 Alexey Kutepov a.k.a rexim
 
