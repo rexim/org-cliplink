@@ -3,28 +3,48 @@
 (add-to-list 'load-path ".")
 (load "org-cliplink.el")
 
+(ert-deftest org-cliplink-parse-raw-header-test ()
+  (should (equal
+           '(("Last-Modified" . "Sun, 08 Mar 2015 14:06:08 GMT")
+             ("Content-Length" . "199")
+             ("Content-type" . "text/html")
+             ("Date" . "Sun, 08 Mar 2015 14:17:14 GMT")
+             ("Server" . "SimpleHTTP/0.6 Python/2.7.9"))
+           (org-cliplink-parse-raw-header
+            (concat "HTTP/1.0 200 OK\n"
+                    "Server: SimpleHTTP/0.6 Python/2.7.9\n"
+                    "Date: Sun, 08 Mar 2015 14:17:14 GMT\n"
+                    "Content-type: text/html\n"
+                    "Content-Length: 199\n"
+                    "Last-Modified: Sun, 08 Mar 2015 14:06:08 GMT\n"))))
+  (should (equal
+           '(("Last-Modified" . "Sun, 08 Mar 2015 14:06:08 GMT")
+             ("Content-Length" . "199")
+             ("Content-type" . "text/html")
+             ("Date" . "Sun, 08 Mar 2015 14:17:14 GMT")
+             ("Server" . "SimpleHTTP/0.6 Python/2.7.9"))
+           (org-cliplink-parse-raw-header
+            (concat "HTTP/1.0 200 OK\n"
+                    "Server: SimpleHTTP/0.6 Python/2.7.9\r\n"
+                    "Date: Sun, 08 Mar 2015 14:17:14 GMT\n"
+                    "Content-type: text/html\n"
+                    "Content-Length: 199\r\n"
+                    "Last-Modified: Sun, 08 Mar 2015 14:06:08 GMT\n")))))
+
 (ert-deftest org-cliplink-parse-response-test ()
-  (let ((test-data '(("test-data/responses/inconsistent-eol-response" .
-                      ((("Last-Modified" . "Sun, 08 Mar 2015 14:06:08 GMT")
-                        ("Content-Length" . "199")
-                        ("Content-type" . "text/html")
-                        ("Date" . "Sun, 08 Mar 2015 14:17:14 GMT")
-                        ("Server" . "SimpleHTTP/0.6 Python/2.7.9")) .
-                        "Here goes body\n"))
-                     ("test-data/responses/correct-response-without-title" .
-                      ((("Last-Modified" . "Sun, 08 Mar 2015 14:06:08 GMT")
-                        ("Content-Length" . "199")
-                        ("Content-type" . "text/html")
-                        ("Date" . "Sun, 08 Mar 2015 14:17:14 GMT")
-                        ("Server" . "SimpleHTTP/0.6 Python/2.7.9")) .
-                        "Here goes body\n")))))
-    (dolist (test-case test-data)
-      (message (car test-case))
-      (let ((data-file (car test-case))
-            (expected-outcome (cdr test-case)))
-        (with-temp-buffer
-          (insert-file data-file)
-          (should (equal (org-cliplink-parse-response) expected-outcome)))))))
+  (with-mock
+   (stub org-cliplink-parse-raw-header => nil)
+   (let ((test-data '(("test-data/responses/inconsistent-eol-response" .
+                       (nil . "Here goes body\n"))
+                      ("test-data/responses/correct-response-without-title" .
+                       (nil . "Here goes body\n")))))
+     (dolist (test-case test-data)
+       (message (car test-case))
+       (let ((data-file (car test-case))
+             (expected-outcome (cdr test-case)))
+         (with-temp-buffer
+           (insert-file data-file)
+           (should (equal (org-cliplink-parse-response) expected-outcome))))))))
 
 
 (ert-deftest org-cliplink-read-secrets-test ()
