@@ -504,8 +504,9 @@ Example:
   (let* ((dest-buffer (current-buffer))
          (basic-auth (org-cliplink-check-basic-auth-for-url url))
          ;; Sometimes url-retrieve invokes the callback multiple
-         ;; times. It looks like a bug in url.el. For more information
-         ;; see https://github.com/rexim/org-cliplink/issues/34
+         ;; times. Looks like it is a bug in url.el. For more
+         ;; information see
+         ;; https://github.com/rexim/org-cliplink/issues/34
          (block-title-callback-invocation nil)
          (url-retrieve-callback
           (lambda (status)
