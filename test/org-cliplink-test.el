@@ -68,9 +68,16 @@
   (with-mock
    (stub org-cliplink-parse-response =>
          '(nil . "<title>hello</title>"))
-   (stub org-cliplink-uncompress-gziped-text =>
-         (error "org-cliplink-uncompress-gziped-text: This function should not be invoked"))
+   (not-called org-cliplink-uncompress-gziped-text)
    (should (equal "hello"
+                  (org-cliplink-extract-and-prepare-title-from-current-buffer))))
+
+  (with-mock
+   (stub org-cliplink-parse-response =>
+         '((("Content-Encoding" . "gzip") . "<title>hello</title>")))
+   (stub org-cliplink-uncompress-gziped-text =>
+         "<title>world</title>")
+   (should (equal "world"
                   (org-cliplink-extract-and-prepare-title-from-current-buffer)))))
 
 (ert-deftest org-cliplink-escape-html4-test ()
