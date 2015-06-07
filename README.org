@@ -1,5 +1,6 @@
 [[http://melpa.org/#/org-cliplink][file:http://melpa.org/packages/org-cliplink-badge.svg]]
 [[https://travis-ci.org/rexim/org-cliplink][file:https://travis-ci.org/rexim/org-cliplink.svg?branch=master]]
+[[https://coveralls.io/r/rexim/org-cliplink][file:https://coveralls.io/repos/rexim/org-cliplink/badge.svg]]
 
 * org-cliplink
   A simple command that takes a URL from the clipboard and inserts an
