@@ -1,0 +1,5 @@
+(require 'undercover)
+(undercover "*.el")
+
+(add-to-list 'load-path ".")
+(load "org-cliplink.el")
