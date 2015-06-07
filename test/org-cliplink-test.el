@@ -96,4 +96,8 @@
 (ert-deftest org-cliplink-insert-org-mode-link-callback-test ()
   (with-temp-buffer
     (org-cliplink-insert-org-mode-link-callback "http://google.com/" "Google")
-    (should (equal (buffer-string) "[[http://google.com/][Google]]"))))
+    (should (equal (buffer-string) "[[http://google.com/][Google]]")))
+
+  (with-temp-buffer
+    (org-cliplink-insert-org-mode-link-callback "http://google.com" nil)
+    (should (equal (buffer-string) "[[http://google.com]]"))))
