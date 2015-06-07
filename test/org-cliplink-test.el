@@ -1,5 +1,3 @@
-(require 'el-mock)
-
 (ert-deftest org-cliplink-parse-raw-header-test ()
   (should (equal
            '(("Last-Modified" . "Sun, 08 Mar 2015 14:06:08 GMT")
@@ -94,3 +92,8 @@
     (should (equal (concat (make-string 77 ?a)
                            (make-string 3 ?.))
                    (org-cliplink-elide-string (make-string 81 ?a))))))
+
+(ert-deftest org-cliplink-insert-org-mode-link-callback-test ()
+  (with-temp-buffer
+    (org-cliplink-insert-org-mode-link-callback "http://google.com/" "Google")
+    (should (equal (buffer-string) "[[http://google.com/][Google]]"))))
