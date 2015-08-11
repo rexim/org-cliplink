@@ -118,3 +118,9 @@
                                 "\x00")))
     (should (equal "hello world"
                    (org-cliplink-uncompress-gziped-text gziped-content)))))
+
+(ert-deftest org-cliplink-clipboard-content-test ()
+  (kill-append "khooy" nil)
+  (should (equal "khooy"
+                 (org-cliplink-clipboard-content))))
+
