@@ -398,6 +398,9 @@ services."
   (when s
     (mapconcat #'identity (split-string s) " ")))
 
+(defun org-cliplink-clipboard-content ()
+  (substring-no-properties (current-kill 0)))
+
 (defun org-cliplink-parse-raw-header (raw-header)
   (let ((start 0)
         (result-header nil))
@@ -441,10 +444,13 @@ services."
           (concat (substring s 0 (- max-length 3)) "...")
         s)))
 
-(defun org-cliplink-insert-org-mode-link-callback (url title)
+(defun org-cliplink-org-mode-link-transformer (url title)
   (if title
-      (insert (format "[[%s][%s]]" url title))
-    (insert (format "[[%s]]" url))))
+      (format "[[%s][%s]]" url title)
+    (format "[[%s]]" url)))
+
+(defun org-cliplink-insert-org-mode-link-callback (url title)
+  (insert (org-cliplink-org-mode-link-transformer url title)))
 
 (defun org-cliplink-uncompress-gziped-text (text)
   (let ((filename (make-temp-file "org-cliplink" nil ".gz")))
@@ -526,6 +532,13 @@ Example:
       (url-retrieve url url-retrieve-callback))))
 
 ;;;###autoload
+(defun org-cliplink-insert-transformed-title (url transformer)
+  (org-cliplink-retrieve-title
+   url
+   (lambda (url title)
+     (insert (funcall transformer url title)))))
+
+;;;###autoload
 (defun org-cliplink-retrieve-title-synchronously (url)
   (let ((response-buffer (url-retrieve-synchronously url)))
     (if response-buffer
@@ -539,8 +552,8 @@ Example:
 with the title of a page found by the URL into the current
 buffer"
   (interactive)
-  (org-cliplink-retrieve-title (substring-no-properties (current-kill 0))
-                               'org-cliplink-insert-org-mode-link-callback))
+  (org-cliplink-insert-transformed-title (org-cliplink-clipboard-content)
+                                         'org-cliplink-org-mode-link-transformer))
 
 (provide 'org-cliplink)
 
