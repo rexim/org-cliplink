@@ -3,48 +3,59 @@
 
 import os
 import ssl
-import threading
+from threading import Thread, Lock
 import time
+
 import SimpleHTTPServer
 import BaseHTTPServer
 
 from request_handlers import GzipSimpleHTTPServer, SimpleAuthHandler
 
+log_mutex = Lock()
+
+
+def log(message):
+    log_mutex.acquire()
+    try:
+        print message
+    finally:
+        log_mutex.release()
+
 
 def start_http_server(port):
-    print "(%d) Starting HTTP Server..." % port
+    log("(%d) Starting HTTP Server..." % port)
     httpd = BaseHTTPServer.HTTPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.serve_forever()
 
 
 def start_https_server(port, certificate):
-    print "(%d) Starting HTTPS Server..." % port
+    log("(%d) Starting HTTPS Server..." % port)
     httpd = BaseHTTPServer.HTTPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
     httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
     httpd.serve_forever()
 
 
 def start_gziped_http_server(port):
-    print "(%d) Starting Gziped HTTP Server..." % port
+    log("(%d) Starting Gziped HTTP Server..." % port)
     httpd = BaseHTTPServer.HTTPServer(("", port), GzipSimpleHTTPServer)
     httpd.serve_forever()
 
 
 def start_gziped_https_server(port, certificate):
-    print "(%d) Starting Gziped HTTPS Server..." % port
+    log("(%d) Starting Gziped HTTPS Server..." % port)
     httpd = BaseHTTPServer.HTTPServer(("", port), GzipSimpleHTTPServer)
     httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
     httpd.serve_forever()
 
 
 def start_http_server_with_basic_auth(port):
-    print "(%d) Starting HTTP Server with Basic Auth..." % port
+    log("(%d) Starting HTTP Server with Basic Auth..." % port)
     httpd = BaseHTTPServer.HTTPServer(("", port), SimpleAuthHandler)
     httpd.serve_forever()
 
 
 def start_https_server_with_basic_auth(port, certificate):
-    print "(%d) Starting HTTPS Server with Basic Auth..." % port
+    log("(%d) Starting HTTPS Server with Basic Auth..." % port)
     httpd = BaseHTTPServer.HTTPServer(("", port), SimpleAuthHandler)
     httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate, server_side=True)
     httpd.serve_forever()
@@ -57,12 +68,12 @@ if __name__ == "__main__":
 
     print "Serving", os.getcwd(), "directory"
 
-    server_threads = [threading.Thread(target = start_http_server, args = (8001,)),
-                      threading.Thread(target = start_https_server, args = (4443, certfile)),
-                      threading.Thread(target = start_gziped_http_server, args = (8002,)),
-                      threading.Thread(target = start_gziped_https_server, args = (4444, certfile)),
-                      threading.Thread(target = start_http_server_with_basic_auth, args = (8003,)),
-                      threading.Thread(target = start_https_server_with_basic_auth, args = (4445, certfile))]
+    server_threads = [Thread(target = start_http_server, args = (8001,)),
+                      Thread(target = start_https_server, args = (4443, certfile)),
+                      Thread(target = start_gziped_http_server, args = (8002,)),
+                      Thread(target = start_gziped_https_server, args = (4444, certfile)),
+                      Thread(target = start_http_server_with_basic_auth, args = (8003,)),
+                      Thread(target = start_https_server_with_basic_auth, args = (4445, certfile))]
 
     for thread in server_threads:
         thread.daemon = True
