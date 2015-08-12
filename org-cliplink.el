@@ -499,12 +499,23 @@ Used when the current transport implementation is set to
                                              org-cliplink-curl-transport-arguments)
       (org-cliplink-http-get-request--url-el url url-retrieve-callback basic-auth))))
 
+(defun org-cliplink-make-anchoring-callback (id transformer)
+  (lambda (url title)
+    (let ((current-point (point)))
+      (goto-char 0)
+      (when (search-forward (format "{{cliplink:%s}}" id))
+        (replace-match (funcall transformer url title)))
+      (goto-char current-point))))
+
 ;;;###autoload
 (defun org-cliplink-insert-transformed-title (url transformer)
-  (org-cliplink-retrieve-title
-   url
-   (lambda (url title)
-     (insert (funcall transformer url title)))))
+  (let* ((id (format "%x" (random)))
+         (anchoring-callback (org-cliplink-make-anchoring-callback
+                              id transformer)))
+    (insert (format "{{cliplink:%s}}" id))
+    (org-cliplink-retrieve-title
+     url
+     anchoring-callback)))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title-synchronously (url)
