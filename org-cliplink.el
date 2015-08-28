@@ -367,6 +367,8 @@
 (defvar org-cliplink-block-authorization nil
   "Flag whether to block url.el's usual interactive authorisation procedure")
 
+(defvar org-cliplink-cache nil)
+
 (defgroup org-cliplink nil
   "A simple command that takes a URL from the clipboard and inserts an
 org-mode link with a title of a page found by the URL into the current
@@ -389,10 +391,26 @@ services."
   :group 'org-cliplink
   :type 'string)
 
+(defcustom org-cliplink-cache-enabled nil
+  "Should org-cliplink cache the requests."
+  :group 'org-cliplink
+  :type 'boolean)
+
 (defadvice url-http-handle-authentication (around org-cliplink-fix)
   (unless org-cliplink-block-authorization
     ad-do-it))
 (ad-activate 'url-http-handle-authentication)
+
+(defun org-cliplink-url-cached (url)
+  (assoc url org-cliplink-cache))
+
+(defun org-cliplink-cache-url (url link)
+  (when (not (org-cliplink-url-cached url))
+    (add-to-list 'org-cliplink-cache (cons url link))))
+
+(defun org-cliplink-clear-cache ()
+  (interactive)
+  (setq org-cliplink-cache nil))
 
 (defun org-cliplink-straight-string (s)
   (when s
