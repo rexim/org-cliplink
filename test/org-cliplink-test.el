@@ -49,11 +49,6 @@
   (let ((org-cliplink-secrets-path "/path/to/non/existing/secrets"))
     (should (not (org-cliplink-read-secrets)))))
 
-(ert-deftest org-cliplink-straight-string-test ()
-  (should (not (org-cliplink-straight-string nil)))
-  (should (equal (org-cliplink-straight-string "   hello    world   ")
-                 "hello world")))
-
 (ert-deftest org-cliplink-check-basic-auth-for-url-test ()
   (let ((org-cliplink-secrets-path "./test-data/secrets/org-cliplink-basic-auth-secrets.el"))
     (should (equal (org-cliplink-check-basic-auth-for-url "http://rexim.me/test")
@@ -85,15 +80,6 @@
                  (org-cliplink-escape-html4
                   "&amp;[Hello] &#39;[World] &alpha; &nbsp;")))
   (should (not (org-cliplink-escape-html4 nil))))
-
-(ert-deftest org-cliplink-elide-string-test ()
-  (should (not (org-cliplink-elide-string nil 0)))
-  (let ((max-length 5))
-    (should (equal "test" (org-cliplink-elide-string "test" max-length)))
-    (should (equal "hello" (org-cliplink-elide-string "hello" max-length)))
-    (should (equal "tr..." (org-cliplink-elide-string "trinitrotoluene" max-length))))
-  (let ((max-length 3))
-    (should (equal "..." (org-cliplink-elide-string "hello" max-length)))))
 
 (ert-deftest org-cliplink-insert-org-mode-link-callback-test ()
   (with-temp-buffer
