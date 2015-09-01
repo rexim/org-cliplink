@@ -51,6 +51,8 @@
 (require 'cl)
 (require 'em-glob)
 
+(require 'org-cliplink-string)
+
 (defconst org-cliplink-basic-escape-alist
   '(("&quot;" . "\"")             ;; " - double-quote
     ("&amp;" . "&")               ;; & - ampersand
@@ -394,10 +396,6 @@ services."
     ad-do-it))
 (ad-activate 'url-http-handle-authentication)
 
-(defun org-cliplink-straight-string (s)
-  (when s
-    (mapconcat #'identity (split-string s) " ")))
-
 (defun org-cliplink-clipboard-content ()
   (substring-no-properties (current-kill 0)))
 
@@ -436,14 +434,6 @@ services."
       (dolist (x org-cliplink-escape-alist result)
         (setq result (replace-regexp-in-string (car x) (cdr x) result))))))
 
-(defun org-cliplink-elide-string (s)
-  (let ((max-length (if (> org-cliplink-max-length 3)
-                        org-cliplink-max-length
-                      80)))
-      (if (> (length s) max-length)
-          (concat (substring s 0 (- max-length 3)) "...")
-        s)))
-
 (defun org-cliplink-org-mode-link-transformer (url title)
   (if title
       (format "[[%s][%s]]" url title)
@@ -471,7 +461,8 @@ services."
      (org-cliplink-escape-html4
       (org-cliplink-straight-string
        (org-cliplink-extract-title-from-html
-        decoded-content))))))
+        decoded-content)))
+     org-cliplink-max-length)))
 
 (defun org-cliplink-read-secrets ()
   (when (file-exists-p org-cliplink-secrets-path)
