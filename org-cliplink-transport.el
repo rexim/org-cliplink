@@ -27,12 +27,18 @@
 ;; CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;; SOFTWARE.
 
+(require 'url-parse)
+
 (require 'org-cliplink-string)
 
-(defun org-cliplink-http-get-request (url callback &optional basic-auth-credentials)
-  (let* ((url-hash (secure-hash 'sha1 url))
-         (response-buffer-name (format "%s" url-hash))
-         (curl-process (start-process (concat "curl-" url-hash)
+(defun org-cliplink-curl-prepare-response-buffer-name (url)
+  (format " *curl-%s-%x*"
+          (url-host (url-generic-parse-url url))
+          (random)))
+
+(defun org-cliplink-http-get-request--curl (url callback &optional basic-auth-credentials)
+  (let* ((response-buffer-name (org-cliplink-curl-prepare-response-buffer-name url))
+         (curl-process (start-process "curl"
                                       response-buffer-name
                                       (executable-find "curl")
                                       "--include"
@@ -46,6 +52,9 @@
                             (when callback
                               (with-current-buffer response-buffer-name
                                 (funcall callback nil)))))))
+
+(defun org-cliplink-http-get-request (url callback &optional basic-auth-credentials)
+  (org-cliplink-http-get-request--curl url callback basic-auth-credentials))
 
 (provide 'org-cliplink-transport)
 

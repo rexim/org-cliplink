@@ -52,6 +52,7 @@
 (require 'em-glob)
 
 (require 'org-cliplink-string)
+(require 'org-cliplink-transport)
 
 (defconst org-cliplink-basic-escape-alist
   '(("&quot;" . "\"")             ;; " - double-quote
