@@ -38,15 +38,22 @@
 
 (defun org-cliplink-http-get-request--curl (url callback &optional basic-auth-credentials)
   (let* ((response-buffer-name (org-cliplink-curl-prepare-response-buffer-name url))
-         (curl-process (start-process "curl"
-                                      response-buffer-name
-                                      (executable-find "curl")
-                                      "--include"
-                                      "--silent"
-                                      "--show-error"
-                                      "-X"
-                                      "GET"
-                                      url)))
+         (curl-arguments
+          (append (list "--include"
+                        "--silent"
+                        "--show-error"
+                        "-X"
+                        "GET")
+                  (when basic-auth-credentials
+                    (destructuring-bind (username . password) basic-auth-credentials
+                      (list "--user"
+                            (format "%s:%s" username password))))
+                  (list url)))
+         (curl-process (apply #'start-process
+                              "curl"
+                              response-buffer-name
+                              (executable-find "curl")
+                              curl-arguments)))
     (set-process-sentinel curl-process
                           (lambda (process event)
                             (when callback
