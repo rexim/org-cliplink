@@ -56,9 +56,13 @@
                               curl-arguments)))
     (set-process-sentinel curl-process
                           (lambda (process event)
-                            (when callback
-                              (with-current-buffer response-buffer-name
-                                (funcall callback nil)))))))
+                            (when (not (process-live-p process))
+                              (if (zerop (process-exit-status process))
+                                  (when callback
+                                    (with-current-buffer response-buffer-name
+                                      (funcall callback nil)))
+                                (with-current-buffer response-buffer-name
+                                  (error (buffer-string)))))))))
 
 (defun org-cliplink-http-get-request (url callback &optional basic-auth-credentials)
   (org-cliplink-http-get-request--curl url callback basic-auth-credentials))
