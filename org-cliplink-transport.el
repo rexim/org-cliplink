@@ -31,6 +31,18 @@
 
 (require 'org-cliplink-string)
 
+(defvar org-cliplink-block-authorization nil
+  "Flag whether to block url.el's usual interactive authorisation procedure")
+
+(defadvice url-http-handle-authentication (around org-cliplink-fix)
+  (unless org-cliplink-block-authorization
+    ad-do-it))
+(ad-activate 'url-http-handle-authentication)
+
+(defun org-cliplink-credentials-to-basic-auth (username password)
+  (concat "Basic " (base64-encode-string
+                    (concat username ":" password))))
+
 (defun org-cliplink-curl-prepare-response-buffer-name (url)
   (format " *curl-%s-%x*"
           (url-host (url-generic-parse-url url))
@@ -50,11 +62,12 @@
                       (list "--user"
                             (format "%s:%s" username password))))
                   (list url)))
-         (curl-process (apply #'start-process
-                              "curl"
-                              response-buffer-name
-                              (executable-find "curl")
-                              curl-arguments)))
+         (curl-process (progn (message "Starting cURL...")
+                              (apply #'start-process
+                                     "curl"
+                                     response-buffer-name
+                                     (executable-find "curl")
+                                     curl-arguments))))
     (set-process-sentinel curl-process
                           (lambda (process event)
                             (when (not (process-live-p process))
@@ -65,8 +78,19 @@
                                 (with-current-buffer response-buffer-name
                                   (error (buffer-string)))))))))
 
+(defun org-cliplink-http-get-request--url-el (url callback &optional basic-auth-credentials)
+  (if basic-auth-credentials
+      (let* ((org-cliplink-block-authorization t)
+             (username (plist-get basic-auth-credentials :username))
+             (password (plist-get basic-auth-credentials :password))
+             (url-request-extra-headers
+              `(("Authorization" . ,(org-cliplink-credentials-to-basic-auth
+                                     username password)))))
+        (url-retrieve url callback))
+    (url-retrieve url callback)))
+
 (defun org-cliplink-http-get-request (url callback &optional basic-auth-credentials)
-  (org-cliplink-http-get-request--curl url callback basic-auth-credentials))
+  (org-cliplink-http-get-request--url-el url callback basic-auth-credentials))
 
 (provide 'org-cliplink-transport)
 
