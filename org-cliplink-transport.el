@@ -47,7 +47,6 @@
                   (when basic-auth-credentials
                     (let ((username (plist-get basic-auth-credentials :username))
                           (password (plist-get basic-auth-credentials :password)))
-                      (message (format "Curl Basic Auth: %s %s" username password))
                       (list "--user"
                             (format "%s:%s" username password))))
                   (list url)))
