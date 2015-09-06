@@ -389,6 +389,13 @@ services."
   :group 'org-cliplink
   :type 'string)
 
+(defcustom org-cliplink-transport-implementation 'url-el
+  "The transport implementation.
+Supported transports are `url-el' and `curl'. `curl' is
+experimental so use it on your own risk."
+  :group 'org-cliplink
+  :type 'symbol)
+
 (defun org-cliplink-clipboard-content ()
   (substring-no-properties (current-kill 0)))
 
@@ -487,7 +494,9 @@ services."
               (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
                 (with-current-buffer dest-buffer
                   (funcall title-callback url title)))))))
-    (org-cliplink-http-get-request url url-retrieve-callback basic-auth)))
+    (if (equal 'curl org-cliplink-transport-implementation)
+        (org-cliplink-http-get-request--curl url url-retrieve-callback basic-auth)
+      (org-cliplink-http-get-request--url-el url url-retrieve-callback basic-auth))))
 
 ;;;###autoload
 (defun org-cliplink-insert-transformed-title (url transformer)
