@@ -48,10 +48,11 @@
           (url-host (url-generic-parse-url url))
           (random)))
 
-(defun org-cliplink-http-get-request--curl (url callback &optional basic-auth-credentials)
+(defun org-cliplink-http-get-request--curl (url callback &optional basic-auth-credentials curl-arguments)
   (let* ((response-buffer-name (org-cliplink-curl-prepare-response-buffer-name url))
          (curl-arguments
-          (append (list "--include"
+          (append curl-arguments
+                  (list "--include"
                         "--silent"
                         "--show-error"
                         "-X"

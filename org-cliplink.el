@@ -396,6 +396,13 @@ experimental so use it on your own risk."
   :group 'org-cliplink
   :type 'symbol)
 
+(defcustom org-cliplink-curl-transport-arguments '()
+  "Additional arguments for cURL.
+Used when the current transport implementation is set to
+`curl'."
+  :group 'org-cliplink
+  :type '(repeat string))
+
 (defun org-cliplink-clipboard-content ()
   (substring-no-properties (current-kill 0)))
 
@@ -495,7 +502,8 @@ experimental so use it on your own risk."
                 (with-current-buffer dest-buffer
                   (funcall title-callback url title)))))))
     (if (equal 'curl org-cliplink-transport-implementation)
-        (org-cliplink-http-get-request--curl url url-retrieve-callback basic-auth)
+        (org-cliplink-http-get-request--curl url url-retrieve-callback basic-auth
+                                             org-cliplink-curl-transport-arguments)
       (org-cliplink-http-get-request--url-el url url-retrieve-callback basic-auth))))
 
 ;;;###autoload

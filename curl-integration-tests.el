@@ -4,6 +4,7 @@
 (load "org-cliplink.el")
 
 (setq org-cliplink-transport-implementation 'curl)
+(setq org-cliplink-curl-transport-arguments '("--insecure"))
 
 (ert-deftest org-cliplink-without-title--http ()
   (let ((url "http://127.0.0.1:8001/without-title.html")
