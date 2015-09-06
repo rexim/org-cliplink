@@ -27,6 +27,7 @@
 
   - Linux
   - Emacs version from 24.1 to 24.5
+  - cURL 7.35.0+ (optional)
 
 ** Windows
 
