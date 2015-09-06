@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (ert-deftest org-cliplink-curl-prepare-response-buffer-name ()
   (let ((url "http://rexim.me/"))
     (should (string-match " \\*curl-rexim.me-[a-z0-9]+"
@@ -25,3 +27,17 @@
                                                       (list :username username
                                                             :password password)
                                                       extra-arguments)))))
+
+(ert-deftest org-cliplink-make-curl-sentinel-test ()
+  (let* ((process 42)
+         (callback-invoked nil)
+         (response-buffer-name "khooy"))
+    (with-mock
+     (mock (process-live-p 42) => nil)
+     (mock (process-exit-status 42) => 0)
+     (mock (curl-sentinel-callback-mock nil) => nil :times 1)
+     (let ((sentinel (org-cliplink-make-curl-sentinel
+                      response-buffer-name
+                      #'curl-sentinel-callback-mock)))
+       (generate-new-buffer response-buffer-name)
+       (funcall sentinel process nil)))))

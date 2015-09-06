@@ -62,6 +62,16 @@
                     (format "%s:%s" username password))))
           (list url)))
 
+(defun org-cliplink-make-curl-sentinel (response-buffer-name callback)
+  (lambda (process event)
+    (when (not (process-live-p process))
+      (if (zerop (process-exit-status process))
+          (when callback
+            (with-current-buffer response-buffer-name
+              (funcall callback nil)))
+        (with-current-buffer response-buffer-name
+          (error (buffer-string)))))))
+
 (defun org-cliplink-http-get-request--curl (url callback &optional basic-auth-credentials extra-curl-arguments)
   (let* ((response-buffer-name (org-cliplink-curl-prepare-response-buffer-name url))
          (curl-arguments (org-cliplink-build-curl-arguments url
@@ -74,14 +84,8 @@
                                      (executable-find "curl")
                                      curl-arguments))))
     (set-process-sentinel curl-process
-                          (lambda (process event)
-                            (when (not (process-live-p process))
-                              (if (zerop (process-exit-status process))
-                                  (when callback
-                                    (with-current-buffer response-buffer-name
-                                      (funcall callback nil)))
-                                (with-current-buffer response-buffer-name
-                                  (error (buffer-string)))))))))
+                          (org-cliplink-make-curl-sentinel response-buffer-name
+                                                           callback))))
 
 (defun org-cliplink-http-get-request--url-el (url callback &optional basic-auth-credentials)
   (if basic-auth-credentials
