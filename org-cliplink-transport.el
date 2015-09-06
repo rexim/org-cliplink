@@ -48,21 +48,25 @@
           (url-host (url-generic-parse-url url))
           (random)))
 
-(defun org-cliplink-http-get-request--curl (url callback &optional basic-auth-credentials curl-arguments)
+(defun org-cliplink-build-curl-arguments (url basic-auth-credentials extra-curl-arguments)
+  (append extra-curl-arguments
+          (list "--include"
+                "--silent"
+                "--show-error"
+                "-X"
+                "GET")
+          (when basic-auth-credentials
+            (let ((username (plist-get basic-auth-credentials :username))
+                  (password (plist-get basic-auth-credentials :password)))
+              (list "--user"
+                    (format "%s:%s" username password))))
+          (list url)))
+
+(defun org-cliplink-http-get-request--curl (url callback &optional basic-auth-credentials extra-curl-arguments)
   (let* ((response-buffer-name (org-cliplink-curl-prepare-response-buffer-name url))
-         (curl-arguments
-          (append curl-arguments
-                  (list "--include"
-                        "--silent"
-                        "--show-error"
-                        "-X"
-                        "GET")
-                  (when basic-auth-credentials
-                    (let ((username (plist-get basic-auth-credentials :username))
-                          (password (plist-get basic-auth-credentials :password)))
-                      (list "--user"
-                            (format "%s:%s" username password))))
-                  (list url)))
+         (curl-arguments (org-cliplink-build-curl-arguments url
+                                                            basic-auth-credentials
+                                                            extra-curl-arguments))
          (curl-process (progn (message "Starting cURL...")
                               (apply #'start-process
                                      "curl"
