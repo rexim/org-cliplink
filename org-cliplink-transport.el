@@ -89,9 +89,6 @@
         (url-retrieve url callback))
     (url-retrieve url callback)))
 
-(defun org-cliplink-http-get-request (url callback &optional basic-auth-credentials)
-  (org-cliplink-http-get-request--url-el url callback basic-auth-credentials))
-
 (provide 'org-cliplink-transport)
 
 ;;; org-cliplink-transport.el ends here
