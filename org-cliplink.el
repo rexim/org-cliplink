@@ -52,6 +52,7 @@
 (require 'em-glob)
 
 (require 'org-cliplink-string)
+(require 'org-cliplink-transport)
 
 (defconst org-cliplink-basic-escape-alist
   '(("&quot;" . "\"")             ;; " - double-quote
@@ -366,9 +367,6 @@
             ("\\]" . "}")
             ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match))))
 
-(defvar org-cliplink-block-authorization nil
-  "Flag whether to block url.el's usual interactive authorisation procedure")
-
 (defgroup org-cliplink nil
   "A simple command that takes a URL from the clipboard and inserts an
 org-mode link with a title of a page found by the URL into the current
@@ -391,10 +389,19 @@ services."
   :group 'org-cliplink
   :type 'string)
 
-(defadvice url-http-handle-authentication (around org-cliplink-fix)
-  (unless org-cliplink-block-authorization
-    ad-do-it))
-(ad-activate 'url-http-handle-authentication)
+(defcustom org-cliplink-transport-implementation 'url-el
+  "The transport implementation.
+Supported transports are `url-el' and `curl'. `curl' is
+experimental so use it on your own risk."
+  :group 'org-cliplink
+  :type 'symbol)
+
+(defcustom org-cliplink-curl-transport-arguments '()
+  "Additional arguments for cURL.
+Used when the current transport implementation is set to
+`curl'."
+  :group 'org-cliplink
+  :type '(repeat string))
 
 (defun org-cliplink-clipboard-content ()
   (substring-no-properties (current-kill 0)))
@@ -478,10 +485,6 @@ services."
                            (plist-get secret :url-pattern)) url)
         (return secret)))))
 
-(defun org-cliplink-credentials-to-basic-auth (username password)
-  (concat "Basic " (base64-encode-string
-                    (concat username ":" password))))
-
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
   (let* ((dest-buffer (current-buffer))
@@ -498,15 +501,10 @@ services."
               (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
                 (with-current-buffer dest-buffer
                   (funcall title-callback url title)))))))
-    (if basic-auth
-      (let* ((org-cliplink-block-authorization t)
-             (basic-auth-username (plist-get basic-auth :username))
-             (basic-auth-password (plist-get basic-auth :password))
-             (url-request-extra-headers
-              `(("Authorization" . ,(org-cliplink-credentials-to-basic-auth
-                                     basic-auth-username basic-auth-password)))))
-        (url-retrieve url url-retrieve-callback))
-      (url-retrieve url url-retrieve-callback))))
+    (if (equal 'curl org-cliplink-transport-implementation)
+        (org-cliplink-http-get-request--curl url url-retrieve-callback basic-auth
+                                             org-cliplink-curl-transport-arguments)
+      (org-cliplink-http-get-request--url-el url url-retrieve-callback basic-auth))))
 
 ;;;###autoload
 (defun org-cliplink-insert-transformed-title (url transformer)

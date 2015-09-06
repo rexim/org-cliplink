@@ -55,10 +55,6 @@
                    '(:url-pattern "http://rexim.me/*" :username "horta" :password "hell")))
     (should (not (org-cliplink-check-basic-auth-for-url "http://fornever.me/test")))))
 
-(ert-deftest org-cliplink-credentials-to-basic-auth-test ()
-  (should (equal "Basic aGVsbG86d29ybGQ="
-                 (org-cliplink-credentials-to-basic-auth "hello" "world"))))
-
 (ert-deftest org-cliplink-extract-and-prepare-title-from-current-buffer-test ()
   (with-mock
    (stub org-cliplink-parse-response =>
@@ -104,4 +100,3 @@
   (kill-append "khooy" nil)
   (should (equal "khooy"
                  (org-cliplink-clipboard-content))))
-
