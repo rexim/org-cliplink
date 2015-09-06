@@ -71,8 +71,8 @@
    This exact script is run on every push to [[https://github.com/rexim/org-cliplink][org-cliplink GitHub repo]]
    on [[https://travis-ci.org/rexim/org-cliplink/][Travis CI]] (that's why it's called ~run-travis-ci.sh~). This
    script starts up a testing web-server, executes integrations tests
-   defined in ~integration-tests.el~ and executes unit tests after
-   that.
+   defined in ~*-integration-tests.el~ files and executes unit tests
+   after that.
 
    You can start the testing web-server standalone:
 
