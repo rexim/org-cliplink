@@ -43,6 +43,11 @@
   (concat "Basic " (base64-encode-string
                     (concat username ":" password))))
 
+(defun org-cliplink-shadow-basic-auth-credentials (basic-auth-credentials)
+  (when basic-auth-credentials
+    (list :username "***"
+          :password "***")))
+
 (defun org-cliplink-curl-prepare-response-buffer-name (url)
   (format " *curl-%s-%x*"
           (url-host (url-generic-parse-url url))
@@ -72,20 +77,30 @@
         (with-current-buffer response-buffer-name
           (error (buffer-string)))))))
 
+(defun org-cliplink-start-curl-process (response-buffer-name curl-arguments)
+  (let ((curl-executable (executable-find "curl")))
+    (apply #'start-process
+           "curl"
+           response-buffer-name
+           curl-executable
+           curl-arguments)))
+
 (defun org-cliplink-http-get-request--curl (url callback &optional basic-auth-credentials extra-curl-arguments)
   (let* ((response-buffer-name (org-cliplink-curl-prepare-response-buffer-name url))
          (curl-arguments (org-cliplink-build-curl-arguments url
                                                             basic-auth-credentials
-                                                            extra-curl-arguments))
-         (curl-process (progn (message "Starting cURL...")
-                              (apply #'start-process
-                                     "curl"
-                                     response-buffer-name
-                                     (executable-find "curl")
-                                     curl-arguments))))
-    (set-process-sentinel curl-process
-                          (org-cliplink-make-curl-sentinel response-buffer-name
-                                                           callback))))
+                                                            extra-curl-arguments)))
+    (message "curl %s"
+     (org-cliplink-join-string
+      (org-cliplink-build-curl-arguments
+       url
+       (org-cliplink-shadow-basic-auth-credentials basic-auth-credentials)
+       extra-curl-arguments)))
+    (set-process-sentinel
+     (org-cliplink-start-curl-process response-buffer-name
+                                      curl-arguments)
+     (org-cliplink-make-curl-sentinel response-buffer-name
+                                      callback))))
 
 (defun org-cliplink-http-get-request--url-el (url callback &optional basic-auth-credentials)
   (if basic-auth-credentials
