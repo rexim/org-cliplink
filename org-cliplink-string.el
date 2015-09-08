@@ -2,6 +2,9 @@
   (when s
     (mapconcat #'identity (split-string s) " ")))
 
+(defun org-cliplink-join-string (ss)
+  (mapconcat #'identity ss " "))
+
 (defun org-cliplink-elide-string (s max-length)
   (when s
     (if (> max-length 3)
