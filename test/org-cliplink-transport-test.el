@@ -41,3 +41,9 @@
                       #'curl-sentinel-callback-mock)))
        (generate-new-buffer response-buffer-name)
        (funcall sentinel process nil)))))
+
+(ert-deftest org-cliplink-shadow-basic-auth-credentials-test ()
+  (should (not (org-cliplink-shadow-basic-auth-credentials nil)))
+  (should (equal (list :username "***"
+                       :password "***")
+                 (org-cliplink-shadow-basic-auth-credentials t))))
