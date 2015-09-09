@@ -47,3 +47,9 @@
   (should (equal (list :username "***"
                        :password "***")
                  (org-cliplink-shadow-basic-auth-credentials t))))
+
+(ert-deftest org-cliplink-start-curl-process-test ()
+  (with-mock
+   (mock (start-process "curl" "khooy" * "foo" "bar" "buzz") => 42 :times 1)
+   (should (equal 42
+                  (org-cliplink-start-curl-process "khooy" '("foo" "bar" "buzz"))))))
