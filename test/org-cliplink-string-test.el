@@ -11,3 +11,7 @@
   (should (not (org-cliplink-straight-string nil)))
   (should (equal (org-cliplink-straight-string "   hello    world   ")
                  "hello world")))
+
+(ert-deftest org-cliplink-join-string-test ()
+  (should (equal "foo bar buzz"
+                 (org-cliplink-join-string (list "foo" "bar" "buzz")))))
