@@ -40,7 +40,17 @@
                       response-buffer-name
                       #'curl-sentinel-callback-mock)))
        (generate-new-buffer response-buffer-name)
-       (funcall sentinel process nil)))))
+       (funcall sentinel process nil)))
+    (with-mock
+     (mock (process-live-p 42) => nil)
+     (mock (process-exit-status 42) => 1)
+     (not-called curl-sentinel-callback-mock)
+     (let ((sentinel (org-cliplink-make-curl-sentinel
+                      response-buffer-name
+                      #'curl-sentinel-callback-mock)))
+       (generate-new-buffer response-buffer-name)
+       (should-error (funcall sentinel process nil)
+                     :type 'error)))))
 
 (ert-deftest org-cliplink-shadow-basic-auth-credentials-test ()
   (should (not (org-cliplink-shadow-basic-auth-credentials nil)))
