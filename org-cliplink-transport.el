@@ -85,17 +85,21 @@
            curl-executable
            curl-arguments)))
 
+(defun org-cliplink-log-curl-command (url basic-auth-credentials extra-curl-arguments)
+  (message "curl %s"
+           (org-cliplink-join-string
+            (org-cliplink-build-curl-arguments
+             url
+             (org-cliplink-shadow-basic-auth-credentials basic-auth-credentials)
+             extra-curl-arguments))))
+
 (defun org-cliplink-http-get-request--curl (url callback &optional basic-auth-credentials extra-curl-arguments)
   (let* ((response-buffer-name (org-cliplink-curl-prepare-response-buffer-name url))
          (curl-arguments (org-cliplink-build-curl-arguments url
                                                             basic-auth-credentials
                                                             extra-curl-arguments)))
-    (message "curl %s"
-     (org-cliplink-join-string
-      (org-cliplink-build-curl-arguments
-       url
-       (org-cliplink-shadow-basic-auth-credentials basic-auth-credentials)
-       extra-curl-arguments)))
+    (org-cliplink-log-curl-command url basic-auth-credentials
+                                   extra-curl-arguments)
     (set-process-sentinel
      (org-cliplink-start-curl-process response-buffer-name
                                       curl-arguments)

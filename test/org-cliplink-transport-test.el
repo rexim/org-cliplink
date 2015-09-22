@@ -63,3 +63,19 @@
    (mock (start-process "curl" "khooy" * "foo" "bar" "buzz") => 42 :times 1)
    (should (equal 42
                   (org-cliplink-start-curl-process "khooy" '("foo" "bar" "buzz"))))))
+
+(ert-deftest org-cliplink-log-curl-command-test ()
+  (with-mock
+   (mock (message "curl %s"
+                  (concat "--hello --world "
+                          "--include --silent --show-error "
+                          "-X GET --user ***:*** http://rexim.me"))
+         => 42
+         :times 1)
+   (should
+    (equal
+     42
+     (org-cliplink-log-curl-command
+      "http://rexim.me"
+      (list :username "hello" :password "world")
+      (list "--hello" "--world"))))))
