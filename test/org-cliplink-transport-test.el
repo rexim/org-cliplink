@@ -28,7 +28,7 @@
                                                             :password password)
                                                       extra-arguments)))))
 
-(ert-deftest org-cliplink-make-curl-sentinel-test ()
+(ert-deftest org-cliplink-build-curl-sentinel-test ()
   (let* ((process 42)
          (callback-invoked nil)
          (response-buffer-name "khooy"))
@@ -36,7 +36,7 @@
      (mock (process-live-p 42) => nil)
      (mock (process-exit-status 42) => 0)
      (mock (curl-sentinel-callback-mock nil) => nil :times 1)
-     (let ((sentinel (org-cliplink-make-curl-sentinel
+     (let ((sentinel (org-cliplink-build-curl-sentinel
                       response-buffer-name
                       #'curl-sentinel-callback-mock)))
        (generate-new-buffer response-buffer-name)
@@ -45,7 +45,7 @@
      (mock (process-live-p 42) => nil)
      (mock (process-exit-status 42) => 1)
      (not-called curl-sentinel-callback-mock)
-     (let ((sentinel (org-cliplink-make-curl-sentinel
+     (let ((sentinel (org-cliplink-build-curl-sentinel
                       response-buffer-name
                       #'curl-sentinel-callback-mock)))
        (generate-new-buffer response-buffer-name)

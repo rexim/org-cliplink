@@ -67,7 +67,7 @@
                     (format "%s:%s" username password))))
           (list url)))
 
-(defun org-cliplink-make-curl-sentinel (response-buffer-name callback)
+(defun org-cliplink-build-curl-sentinel (response-buffer-name callback)
   (lambda (process event)
     (when (not (process-live-p process))
       (if (zerop (process-exit-status process))
@@ -103,7 +103,7 @@
     (set-process-sentinel
      (org-cliplink-start-curl-process response-buffer-name
                                       curl-arguments)
-     (org-cliplink-make-curl-sentinel response-buffer-name
+     (org-cliplink-build-curl-sentinel response-buffer-name
                                       callback))))
 
 (defun org-cliplink-http-get-request--url-el (url callback &optional basic-auth-credentials)
