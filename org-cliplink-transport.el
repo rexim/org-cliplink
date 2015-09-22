@@ -104,18 +104,28 @@
      (org-cliplink-start-curl-process response-buffer-name
                                       curl-arguments)
      (org-cliplink-build-curl-sentinel response-buffer-name
-                                      callback))))
+                                       callback))))
 
 (defun org-cliplink-http-get-request--url-el (url callback &optional basic-auth-credentials)
-  (if basic-auth-credentials
-      (let* ((org-cliplink-block-authorization t)
-             (username (plist-get basic-auth-credentials :username))
-             (password (plist-get basic-auth-credentials :password))
-             (url-request-extra-headers
-              `(("Authorization" . ,(org-cliplink-credentials-to-basic-auth
-                                     username password)))))
-        (url-retrieve url callback))
-    (url-retrieve url callback)))
+  (let* (;; Sometimes url-retrieve invokes the callback multiple
+         ;; times. Looks like it is a bug in url.el. For more
+         ;; information see
+         ;; https://github.com/rexim/org-cliplink/issues/34
+         (block-title-callback-invocation nil)
+         (url-retrieve-callback
+          (lambda (status)
+            (when (not block-title-callback-invocation)
+              (setq block-title-callback-invocation t)
+              (funcall callback status)))))
+    (if basic-auth-credentials
+        (let* ((org-cliplink-block-authorization t)
+               (username (plist-get basic-auth-credentials :username))
+               (password (plist-get basic-auth-credentials :password))
+               (url-request-extra-headers
+                `(("Authorization" . ,(org-cliplink-credentials-to-basic-auth
+                                       username password)))))
+          (url-retrieve url url-retrieve-callback))
+      (url-retrieve url url-retrieve-callback))))
 
 (provide 'org-cliplink-transport)
 

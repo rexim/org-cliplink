@@ -489,18 +489,11 @@ Used when the current transport implementation is set to
 (defun org-cliplink-retrieve-title (url title-callback)
   (let* ((dest-buffer (current-buffer))
          (basic-auth (org-cliplink-check-basic-auth-for-url url))
-         ;; Sometimes url-retrieve invokes the callback multiple
-         ;; times. Looks like it is a bug in url.el. For more
-         ;; information see
-         ;; https://github.com/rexim/org-cliplink/issues/34
-         (block-title-callback-invocation nil)
          (url-retrieve-callback
           (lambda (status)
-            (when (not block-title-callback-invocation)
-              (setq block-title-callback-invocation t)
-              (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
-                (with-current-buffer dest-buffer
-                  (funcall title-callback url title)))))))
+            (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
+              (with-current-buffer dest-buffer
+                (funcall title-callback url title))))))
     (if (equal 'curl org-cliplink-transport-implementation)
         (org-cliplink-http-get-request--curl url url-retrieve-callback basic-auth
                                              org-cliplink-curl-transport-arguments)
