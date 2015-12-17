@@ -18,6 +18,7 @@
                                 "--include"
                                 "--silent"
                                 "--show-error"
+                                "--compressed"
                                 "-X" "GET"
                                 "--user"
                                 (concat username ":" password)
@@ -68,7 +69,7 @@
   (with-mock
    (mock (message "curl %s"
                   (concat "--hello --world "
-                          "--include --silent --show-error "
+                          "--include --silent --show-error --compressed "
                           "-X GET --user ***:*** http://rexim.me"))
          => 42
          :times 1)
