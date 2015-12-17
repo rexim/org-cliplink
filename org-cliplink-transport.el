@@ -58,6 +58,7 @@
           (list "--include"
                 "--silent"
                 "--show-error"
+                "--compressed"
                 "-X"
                 "GET")
           (when basic-auth-credentials
