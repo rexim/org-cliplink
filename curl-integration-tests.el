@@ -46,6 +46,26 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
+(ert-deftest org-cliplink-simple-title--gziped-http ()
+  (let ((url "http://127.0.0.1:8002/http.html")
+        (expected-outcome "[[http://127.0.0.1:8002/http.html][Hello World]]")
+        (timeout 5))
+    (with-temp-buffer
+      (kill-new url)
+      (org-cliplink)
+      (sleep-for timeout)
+      (should (equal (buffer-string) expected-outcome)))))
+
+(ert-deftest org-cliplink-escape-title--gziped-https ()
+  (let ((url "https://127.0.0.1:4444/html4-escaping.html")
+        (expected-outcome "[[https://127.0.0.1:4444/html4-escaping.html][&{Hello} '{World} α  ]]")
+        (timeout 5))
+    (with-temp-buffer
+      (kill-new url)
+      (org-cliplink)
+      (sleep-for timeout)
+      (should (equal (buffer-string) expected-outcome)))))
+
 (ert-deftest org-cliplink-simple-title--http-with-basic-auth ()
   (let ((url "http://127.0.0.1:8003/http.html")
         (expected-outcome "[[http://127.0.0.1:8003/http.html][Hello World]]")
