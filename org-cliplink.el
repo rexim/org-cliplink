@@ -455,6 +455,7 @@ Used when the current transport implementation is set to
     (with-auto-compression-mode
       (with-temp-buffer
         (insert-file-contents filename)
+        (delete-file filename)
         (buffer-string)))))
 
 (defun org-cliplink-extract-and-prepare-title-from-current-buffer ()
