@@ -524,6 +524,17 @@ buffer"
   (org-cliplink-insert-transformed-title (org-cliplink-clipboard-content)
                                          'org-cliplink-org-mode-link-transformer))
 
+;;;###autoload
+(defun org-cliplink-capture ()
+  "org-cliplink version for org-capture templates.
+Makes synchronous request. Returns the link instead of inserting
+it to the current buffer. Doesn't support Basic Auth. Doesn't
+support cURL transport."
+  (interactive)
+  (let ((url (org-cliplink-clipboard-content)))
+    (org-cliplink-org-mode-link-transformer url
+     (org-cliplink-retrieve-title-synchronously url))))
+
 (provide 'org-cliplink)
 
 ;;; org-cliplink.el ends here
