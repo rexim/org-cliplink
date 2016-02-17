@@ -1,10 +1,13 @@
 language: emacs-lisp
+os:
+  - linux
+  - osx
 sudo: required
 before_install:
   - sudo mkdir /usr/local/evm
   - sudo chown travis:travis /usr/local/evm
-  - export PATH="/home/travis/.cask/bin:$PATH"
-  - export PATH="/home/travis/.evm/bin:$PATH"
+  - export PATH="$HOME/.cask/bin:$PATH"
+  - export PATH="$HOME/.evm/bin:$PATH"
 install:
   - curl -fsSkL https://raw.github.com/rejeep/evm/master/go | bash
   - evm install $EVM_EMACS --use --skip
