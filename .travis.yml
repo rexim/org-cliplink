@@ -5,7 +5,7 @@ os:
 sudo: required
 before_install:
   - sudo mkdir /usr/local/evm
-  - sudo chown "$USER:$USER" /usr/local/evm
+  - sudo chown "$USER" /usr/local/evm
   - export PATH="$HOME/.cask/bin:$PATH"
   - export PATH="$HOME/.evm/bin:$PATH"
 install:
