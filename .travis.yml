@@ -4,10 +4,9 @@ os:
   - osx
 sudo: required
 before_install:
-  - export PATH="$HOME/.evm/bin:$PATH"
+  - gem install evm
   - export PATH="$HOME/.cask/bin:$PATH"
 install:
-  - git clone https://github.com/rejeep/evm.git ~/.evm
   - evm install $EVM_EMACS --use --skip
   - curl -fsSkL https://raw.github.com/cask/cask/master/go | python
   - cask
