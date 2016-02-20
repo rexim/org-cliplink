@@ -11,6 +11,7 @@ before_install:
 install:
   - curl -fsSkL https://raw.github.com/rejeep/evm/master/go | bash
   - evm install $EVM_EMACS --use --skip
+  - emacs --version
   - curl -fsSkL https://raw.github.com/cask/cask/master/go | python
   - cask
 env:
