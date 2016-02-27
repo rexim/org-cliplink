@@ -2,24 +2,22 @@ language: emacs-lisp
 os:
   - linux
   - osx
-sudo: required
 before_install:
-  - sudo mkdir /usr/local/evm
-  - sudo chown "$USER" /usr/local/evm
   - export PATH="$HOME/.cask/bin:$PATH"
   - export PATH="$HOME/.evm/bin:$PATH"
 install:
-  - curl -fsSkL https://raw.github.com/rejeep/evm/master/go | bash
+  - git clone https://github.com/rejeep/evm.git "$HOME/.evm"
+  - evm config path /tmp
   - evm install $EVM_EMACS --use --skip
   - emacs --version
   - curl -fsSkL https://raw.github.com/cask/cask/master/go | python
   - cask
 env:
-  - EVM_EMACS=emacs-24.1-bin
-  - EVM_EMACS=emacs-24.2-bin
-  - EVM_EMACS=emacs-24.3-bin
-  - EVM_EMACS=emacs-24.4-bin
-  - EVM_EMACS=emacs-24.5-bin
+  - EVM_EMACS=emacs-24.1-travis
+  - EVM_EMACS=emacs-24.2-travis
+  - EVM_EMACS=emacs-24.3-travis
+  - EVM_EMACS=emacs-24.4-travis
+  - EVM_EMACS=emacs-24.5-travis
 script:
   - ./run-travis-ci.sh
 notifications:
