@@ -1,3 +1,4 @@
+(require 'cl)
 (require 'el-mock)
 (require 'undercover)
 

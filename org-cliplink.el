@@ -49,7 +49,6 @@
 
 ;;; Code:
 
-(require 'cl)
 (require 'em-glob)
 
 (require 'org-cliplink-string)
@@ -481,11 +480,15 @@ Used when the current transport implementation is set to
 
 (defun org-cliplink-check-basic-auth-for-url (url)
   (let ((basic-auth-secrets (plist-get (org-cliplink-read-secrets)
-                                       :basic-auth)))
-    (dolist (secret basic-auth-secrets)
-      (when (string-match (eshell-glob-regexp
-                           (plist-get secret :url-pattern)) url)
-        (return secret)))))
+                                       :basic-auth))
+        (result nil))
+    (while (and (not result) basic-auth-secrets)
+      (let ((secret (car basic-auth-secrets)))
+        (when (string-match (eshell-glob-regexp
+                             (plist-get secret :url-pattern)) url)
+          (setq result secret)))
+      (pop basic-auth-secrets))
+    result))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title (url title-callback)
@@ -493,6 +496,7 @@ Used when the current transport implementation is set to
          (basic-auth (org-cliplink-check-basic-auth-for-url url))
          (url-retrieve-callback
           (lambda (status)
+            (ignore status)
             (let ((title (org-cliplink-extract-and-prepare-title-from-current-buffer)))
               (with-current-buffer dest-buffer
                 (funcall title-callback url title))))))
