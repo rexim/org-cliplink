@@ -69,6 +69,7 @@
 
 (defun org-cliplink-build-curl-sentinel (response-buffer-name callback)
   (lambda (process event)
+    (ignore event)
     (when (not (process-live-p process))
       (if (zerop (process-exit-status process))
           (when callback
