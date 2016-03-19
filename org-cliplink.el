@@ -6,6 +6,7 @@
 ;; Maintainer: Alexey Kutepov <reximkut@gmail.com>
 ;; URL: http://github.com/rexim/org-cliplink
 ;; Version: 0.2
+;; Package-Requires: ((emacs "24.4"))
 
 ;; Permission is hereby granted, free of charge, to any person
 ;; obtaining a copy of this software and associated documentation
