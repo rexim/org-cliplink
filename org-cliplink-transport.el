@@ -126,7 +126,7 @@
                 `(("Authorization" . ,(org-cliplink-credentials-to-basic-auth
                                        username password)))))
           (url-retrieve url url-retrieve-callback))
-      (url-retrieve url url-retrieve-callback))))
+      (url-retrieve url url-retrieve-callback nil nil t))))
 
 (provide 'org-cliplink-transport)
 
