@@ -55,6 +55,22 @@
                    '(:url-pattern "http://rexim.me/*" :username "horta" :password "hell")))
     (should (not (org-cliplink-check-basic-auth-for-url "http://fornever.me/test")))))
 
+(ert-deftest org-cliplink-extract-and-prepare-title-from-current-buffer-test ()
+  (with-mock
+   (stub org-cliplink-parse-response =>
+         '(nil . "<title>hello</title>"))
+   (not-called org-cliplink-uncompress-gziped-text)
+   (should (equal "hello"
+                  (org-cliplink-extract-and-prepare-title-from-current-buffer))))
+
+  (with-mock
+   (stub org-cliplink-parse-response =>
+         '((("Content-Encoding" . "gzip")) . "<title>hello</title>"))
+   (stub org-cliplink-uncompress-gziped-text =>
+         "<title>world</title>")
+   (should (equal "hello"
+                  (org-cliplink-extract-and-prepare-title-from-current-buffer)))))
+
 (ert-deftest org-cliplink-escape-html4-test ()
   (should (equal "&{Hello} '{World} α  "
                  (org-cliplink-escape-html4
@@ -69,6 +85,16 @@
   (with-temp-buffer
     (org-cliplink-insert-org-mode-link-callback "http://google.com" nil)
     (should (equal (buffer-string) "[[http://google.com]]"))))
+
+(ert-deftest org-cliplink-uncompress-gziped-text-test ()
+  (let ((gziped-content (concat "\x1F\x8B\x08\x00\xD8\x8B"
+                                "\x74\x55\x00\x03\xCB\x48"
+                                "\xCD\xC9\xC9\x57\x28\xCF"
+                                "\x2F\xCA\x49\x01\x00\x85"
+                                "\x11\x4A\x0D\x0B\x00\x00"
+                                "\x00")))
+    (should (equal "hello world"
+                   (org-cliplink-uncompress-gziped-text gziped-content)))))
 
 (ert-deftest org-cliplink-clipboard-content-test ()
   (kill-append "khooy" nil)

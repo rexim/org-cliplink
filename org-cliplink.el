@@ -449,6 +449,15 @@ Used when the current transport implementation is set to
 (defun org-cliplink-insert-org-mode-link-callback (url title)
   (insert (org-cliplink-org-mode-link-transformer url title)))
 
+(defun org-cliplink-uncompress-gziped-text (text)
+  (let ((filename (make-temp-file "org-cliplink" nil ".gz")))
+    (write-region text nil filename)
+    (with-auto-compression-mode
+      (with-temp-buffer
+        (insert-file-contents filename)
+        (delete-file filename)
+        (buffer-string)))))
+
 (defun org-cliplink-extract-and-prepare-title-from-current-buffer ()
   (let* ((response (org-cliplink-parse-response))
          (header (car response))
