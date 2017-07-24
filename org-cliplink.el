@@ -462,6 +462,10 @@ Used when the current transport implementation is set to
   (let* ((response (org-cliplink-parse-response))
          (header (car response))
          (content (cdr response))
+         (content (if (and (string= "gzip" (cdr (assoc "Content-Encoding" header)))
+                           (not (string= "gzip" url-mime-encoding-string)))
+                      (org-cliplink-uncompress-gziped-text (cdr response))
+                    (cdr response)))
          (decoded-content (decode-coding-string content (quote utf-8))))
     (org-cliplink-elide-string
      (org-cliplink-escape-html4
