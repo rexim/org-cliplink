@@ -3,7 +3,9 @@
 (add-to-list 'load-path ".")
 (load "org-cliplink.el")
 
-(customize-set-variable org-cliplink-transport-implementation 'url-el)
+(custom-set-variables
+ '(org-cliplink-transport-implementation (quote url-el))
+ '(network-security-level (quote low)))
 
 (ert-deftest org-cliplink-without-title--http ()
   (let ((url "http://127.0.0.1:8001/without-title.html")
