@@ -65,10 +65,10 @@
 
   (with-mock
    (stub org-cliplink-parse-response =>
-         '((("Content-Encoding" . "gzip") . "<title>hello</title>")))
+         '((("Content-Encoding" . "gzip")) . "<title>hello</title>"))
    (stub org-cliplink-uncompress-gziped-text =>
-         "<title>world</title>")
-   (should (equal "world"
+         "<title>hello</title>")
+   (should (equal "hello"
                   (org-cliplink-extract-and-prepare-title-from-current-buffer)))))
 
 (ert-deftest org-cliplink-escape-html4-test ()
