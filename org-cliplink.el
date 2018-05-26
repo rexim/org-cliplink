@@ -426,9 +426,10 @@ Used when the current transport implementation is set to
           content)))
 
 (defun org-cliplink-extract-title-from-html (html)
-  (let ((start (string-match "<title>" html))
-        (end (string-match "</title>" html))
-        (chars-to-skip (length "<title>")))
+  (let* ((start0 (string-match "<title" html))
+         (start (when start0 (string-match ">" html start0)))
+         (end (string-match "</title>" html))
+         (chars-to-skip (length ">")))
     (if (and start end (< start end))
         (substring html (+ start chars-to-skip) end)
       nil)))
