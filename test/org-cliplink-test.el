@@ -69,6 +69,12 @@
    (not-called org-cliplink-uncompress-gziped-text)
    (should (equal "hello"
                   (org-cliplink-extract-and-prepare-title-from-current-buffer))))
+  (with-mock
+   (stub org-cliplink-parse-response =>
+         '(nil . "<TITLE>hello</TITLE>"))
+   (not-called org-cliplink-uncompress-gziped-text)
+   (should (equal "hello"
+                  (org-cliplink-extract-and-prepare-title-from-current-buffer))))
 
   (with-mock
    (stub org-cliplink-parse-response =>
