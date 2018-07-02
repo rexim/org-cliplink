@@ -16,15 +16,32 @@
 
 * Usage
 
-  Bind ~org-cliplink~ function to something. For example, put this
-  line in your init file:
+** org-cliplink
 
-  #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "C-x p i") 'org-cliplink)
-  #+END_SRC
+   Bind ~org-cliplink~ function to something. For example, put this
+   line in your init file:
 
-  Then copy any http/https URL to the clipboard, switch to the Emacs
-  window and hit ~C-x p i~.
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "C-x p i") 'org-cliplink)
+   #+END_SRC
+
+   Then copy any http/https URL to the clipboard, switch to the Emacs
+   window and hit ~C-x p i~.
+
+** org-cliplink-capture
+
+   ~org-cliplink~ version for [[https://www.gnu.org/software/emacs/manual/html_node/org/Capture.html#Capture][org-capture]] templates. Makes synchronous
+   request. Returns the link instead of inserting it to the current
+   buffer. *Doesn’t support Basic Auth. Doesn’t support cURL
+   transport.*
+
+   Here is how it's supposed to be used in [[https://www.gnu.org/software/emacs/manual/html_node/org/Capture-templates.html#Capture-templates][org-capture-templates]]:
+
+   #+BEGIN_SRC emacs-lisp
+     (setq org-capture-templates
+        '(("K" "Cliplink capture task" entry (file "")
+           "* TODO %(org-cliplink-capture) \n  SCHEDULED: %t\n" :empty-lines 1)))
+   #+END_SRC
 
 * Requirements
 
