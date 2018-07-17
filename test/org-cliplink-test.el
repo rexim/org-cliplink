@@ -113,3 +113,9 @@
   (kill-append "khooy" nil)
   (should (equal "khooy"
                  (org-cliplink-clipboard-content))))
+
+(ert-deftest org-cliplink-retrieve-title-synchronously-test ()
+  (with-mock
+   (stub message => :times 0)
+   (should (equal nil
+                  (org-cliplink-retrieve-title-synchronously "file:///.")))))

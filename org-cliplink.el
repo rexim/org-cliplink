@@ -517,11 +517,12 @@ Used when the current transport implementation is set to
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title-synchronously (url)
-  (let ((response-buffer (url-retrieve-synchronously url)))
-    (if response-buffer
-      (with-current-buffer response-buffer
-        (org-cliplink-extract-and-prepare-title-from-current-buffer))
-      (message "Response buffer is nil!"))))
+  (when (member (url-type (url-generic-parse-url url))
+                '("http" "https"))
+    (let ((response-buffer (url-retrieve-synchronously url t)))
+      (when response-buffer
+        (with-current-buffer response-buffer
+          (org-cliplink-extract-and-prepare-title-from-current-buffer))))))
 
 ;;;###autoload
 (defun org-cliplink ()
