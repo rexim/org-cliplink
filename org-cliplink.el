@@ -510,6 +510,9 @@ Used when the current transport implementation is set to
 
 ;;;###autoload
 (defun org-cliplink-insert-transformed-title (url transformer)
+  "Takes the URL, asynchronously retrieves the title and applies
+a custom TRANSFORMER which transforms the url and title and insert
+the required text to the current buffer."
   (org-cliplink-retrieve-title
    url
    (lambda (url title)

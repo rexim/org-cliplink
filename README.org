@@ -43,6 +43,37 @@
            "* TODO %(org-cliplink-capture) \n  SCHEDULED: %t\n" :empty-lines 1)))
    #+END_SRC
 
+** Custom Transformers
+
+   You can actually customize how org-cliplink transforms the inserts
+   url and title to the current buffer. To do that use
+   ~org-cliplink-insert-transformed-title~ function. It takes the URL
+   and a CALLBACK which is invoked when the title is retrieved.
+
+   For example, if you want to strip off ~Github - <description>:~
+   from the GitHub titles you can implement the following
+   ~custom-org-cliplink~ function and use it instead of the original
+   ~org-cliplink~:
+
+   #+BEGIN_SRC emacs-lisp
+     (defun custom-org-cliplink ()
+       (interactive)
+       (org-cliplink-insert-transformed-title
+        (org-cliplink-clipboard-content)     ;take the URL from the CLIPBOARD
+        (lambda (url title)
+          (let* ((parsed-url (url-generic-parse-url url)) ;parse the url
+                 (clean-title
+                  (cond
+                   ;; if the host is github.com, cleanup the title
+                   ((string= (url-host parsed-url) "github.com")
+                    (replace-regexp-in-string "GitHub - .*: \\(.*\\)" "\\1" title))
+                   ;; otherwise keep the original title
+                   (t title))))
+            ;; forward the title to the default org-cliplink transformer
+            ;; which will insert the org-mode link
+            (org-cliplink-org-mode-link-transformer url clean-title)))))
+   #+END_SRC
+
 * Requirements
 
   - Linux
