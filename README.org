@@ -70,7 +70,6 @@
                    ;; otherwise keep the original title
                    (t title))))
             ;; forward the title to the default org-cliplink transformer
-            ;; which will insert the org-mode link
             (org-cliplink-org-mode-link-transformer url clean-title)))))
    #+END_SRC
 
