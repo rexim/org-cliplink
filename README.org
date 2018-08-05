@@ -45,7 +45,7 @@
 
 ** Custom Transformers
 
-   You can actually customize how org-cliplink transforms the inserts
+   You can actually customize how org-cliplink transforms and inserts
    url and title to the current buffer. To do that use
    ~org-cliplink-insert-transformed-title~ function. It takes the URL
    and a CALLBACK which is invoked when the title is retrieved.
