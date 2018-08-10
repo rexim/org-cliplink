@@ -445,7 +445,10 @@ Used when the current transport implementation is set to
 
 (defun org-cliplink-org-mode-link-transformer (url title)
   (if title
-      (format "[[%s][%s]]" url title)
+      (format "[[%s][%s]]" url (org-cliplink-elide-string
+                                (org-cliplink-escape-html4
+                                 title)
+                                org-cliplink-max-length))
     (format "[[%s]]" url)))
 
 (defun org-cliplink-insert-org-mode-link-callback (url title)
@@ -468,12 +471,9 @@ Used when the current transport implementation is set to
                       (org-cliplink-uncompress-gziped-text (cdr response))
                     (cdr response)))
          (decoded-content (decode-coding-string content (quote utf-8))))
-    (org-cliplink-elide-string
-     (org-cliplink-escape-html4
-      (org-cliplink-straight-string
-       (org-cliplink-extract-title-from-html
-        decoded-content)))
-     org-cliplink-max-length)))
+    (org-cliplink-straight-string
+     (org-cliplink-extract-title-from-html
+      decoded-content))))
 
 (defun org-cliplink-read-secrets ()
   (when (file-exists-p org-cliplink-secrets-path)
@@ -525,7 +525,10 @@ the required text to the current buffer."
     (let ((response-buffer (url-retrieve-synchronously url t)))
       (when response-buffer
         (with-current-buffer response-buffer
-          (org-cliplink-extract-and-prepare-title-from-current-buffer))))))
+          (org-cliplink-elide-string
+           (org-cliplink-escape-html4
+            (org-cliplink-extract-and-prepare-title-from-current-buffer))
+           org-cliplink-max-length))))))
 
 ;;;###autoload
 (defun org-cliplink ()
