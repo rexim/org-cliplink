@@ -26,6 +26,24 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
+(ert-deftest org-cliplink-long-title-with-custom-transformer--http ()
+  (let ((url "http://127.0.0.1:8001/long-title.html")
+        (expected-outcome "[[http://127.0.0.1:8001/long-title.html][long title]]")
+        (timeout 1)
+        (custom-org-cliplink
+         (lambda ()
+           (org-cliplink-insert-transformed-title
+            (org-cliplink-clipboard-content)
+            (lambda (url title)
+              (org-cliplink-org-mode-link-transformer
+               url
+               (replace-regexp-in-string "\\(very \\)+\\([[:alpha:][:space:]]+\\)" "\\2" title)))))))
+    (with-temp-buffer
+      (kill-new url)
+      (funcall custom-org-cliplink)
+      (sleep-for timeout)
+      (should (equal (buffer-string) expected-outcome)))))
+
 (ert-deftest org-cliplink-escape-title--http ()
   (let ((url "http://127.0.0.1:8001/html4-escaping.html")
         (expected-outcome "[[http://127.0.0.1:8001/html4-escaping.html][&{Hello} '{World} α  ]]")
