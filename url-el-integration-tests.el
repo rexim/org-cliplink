@@ -35,6 +35,12 @@
       (sleep-for timeout)
       (should (equal (buffer-string) expected-outcome)))))
 
+(ert-deftest org-cliplink-retrieve-long-title-synchronously--http ()
+  (let ((url "http://127.0.0.1:8001/long-title.html")
+        (expected-outcome "very very very very very very very very very very very very very very very ve..."))
+    (should (equal (org-cliplink-retrieve-title-synchronously url)
+                   expected-outcome))))
+
 (ert-deftest org-cliplink-simple-title--http ()
   (let ((url "http://127.0.0.1:8001/http.html")
         (expected-outcome "[[http://127.0.0.1:8001/http.html][Hello World]]")
