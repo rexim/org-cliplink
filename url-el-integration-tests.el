@@ -19,7 +19,7 @@
 
 (ert-deftest org-cliplink-long-title-with-custom-transformer--http ()
   (let ((url "http://127.0.0.1:8001/long-title.html")
-        (expected-outcome "[[http://127.0.0.1:8001/http.html][long title]]")
+        (expected-outcome "[[http://127.0.0.1:8001/long-title.html][long title]]")
         (timeout 1)
         (custom-org-cliplink
          (lambda ()
