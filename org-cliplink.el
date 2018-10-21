@@ -403,8 +403,63 @@ Used when the current transport implementation is set to
   :group 'org-cliplink
   :type '(repeat string))
 
+(defcustom org-cliplink-clipboard-source-is-system nil
+  "Clipboard source.
+Non-nil means use system clipboard as source.
+
+When nil, use the first element of kill-ring as source"
+  :group 'org-cliplink
+  :type 'boolean)
+
+;; Copied from https://github.com/rolandwalker/simpleclip/blob/master/simpleclip.el
+(defun org-cliplink-simpleclip-get-contents ()
+  "Return the contents of the system clipboard as a string."
+  (condition-case nil
+      (cond
+        ((fboundp 'ns-get-pasteboard)
+         (ns-get-pasteboard))
+        ((fboundp 'w32-get-clipboard-data)
+         (or (w32-get-clipboard-data)
+             simpleclip-contents))
+        ((and (featurep 'mac)
+              (fboundp 'gui-get-selection))
+         (gui-get-selection 'CLIPBOARD 'NSStringPboardType))
+        ((and (featurep 'mac)
+              (fboundp 'x-get-selection))
+         (x-get-selection 'CLIPBOARD 'NSStringPboardType))
+        ;; todo, this should try more than one request type, as in gui--selection-value-internal
+        ((fboundp 'gui-get-selection)
+         (gui-get-selection 'CLIPBOARD (or x-select-request-type 'UTF8_STRING)))
+        ;; todo, this should try more than one request type, as in gui--selection-value-internal
+        ((fboundp 'x-get-selection)
+         (x-get-selection 'CLIPBOARD (or x-select-request-type 'UTF8_STRING)))
+        (t
+         (error "Clipboard support not available")))
+    (error
+     (condition-case nil
+         (cond
+           ((eq system-type 'darwin)
+            (with-output-to-string
+              (with-current-buffer standard-output
+                (call-process "/usr/bin/pbpaste" nil t nil "-Prefer" "txt"))))
+           ((eq system-type 'cygwin)
+            (with-output-to-string
+              (with-current-buffer standard-output
+                (call-process "getclip" nil t nil))))
+           ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
+            (with-output-to-string
+              (with-current-buffer standard-output
+                (call-process "xsel" nil t nil "--clipboard" "--output"))))
+           (t
+            (error "Clipboard support not available")))
+       (error
+        (error "Clipboard support not available"))))))
+
 (defun org-cliplink-clipboard-content ()
-  (substring-no-properties (current-kill 0)))
+  (let ((content (if org-cliplink-clipboard-source-is-system
+                    (org-cliplink-simpleclip-get-contents)
+                  (current-kill 0))))
+    (substring-no-properties content)))
 
 (defun org-cliplink-parse-raw-header (raw-header)
   (let ((start 0)
