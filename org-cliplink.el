@@ -403,8 +403,22 @@ Used when the current transport implementation is set to
   :group 'org-cliplink
   :type '(repeat string))
 
+(defcustom org-cliplink-simpleclip-source nil
+  "Clipboard source.
+Non-nil means use system clipboard as source.
+The clipboard content will be provided by `simpleclip',
+requiring simpleclip.el to be installed.
+
+When nil, use the first element of kill-ring as source"
+  :group 'org-cliplink
+  :type 'boolean)
+
 (defun org-cliplink-clipboard-content ()
-  (substring-no-properties (current-kill 0)))
+  (let ((content (if (and org-cliplink-simpleclip-source
+                          (fboundp 'simpleclip-get-contents))
+                     (simpleclip-get-contents)
+                   (current-kill 0))))
+    (substring-no-properties content)))
 
 (defun org-cliplink-parse-raw-header (raw-header)
   (let ((start 0)
