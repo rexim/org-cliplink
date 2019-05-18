@@ -389,6 +389,18 @@ services."
   :group 'org-cliplink
   :type 'string)
 
+(defcustom org-cliplink-title-replacements
+  '(("https://github.com/.+/?"
+     ("\\(.*\\) · \\(?:Issue\\|Pull Request\\) #\\([0-9]+\\) · \\(.*\\) · GitHub"
+      "\\3#\\2 \\1"))
+    ("https://twitter.com/.+/status/[[:digit:]]+/?"
+     (".+ on Twitter: \\(.+\\)" "\\1")))
+  "A list of rules for formatting titles.
+
+Each entry has the form (URL-REGEXP . (TITLE-REGEXP . REPLACEMENT))."
+  :group 'org-cliplink
+  :type '(repeat (list string (list string string))))
+
 (defcustom org-cliplink-transport-implementation 'url-el
   "The transport implementation.
 Supported transports are `url-el' and `curl'. `curl' is
@@ -457,11 +469,27 @@ When nil, use the first element of kill-ring as source"
       (dolist (x org-cliplink-escape-alist result)
         (setq result (replace-regexp-in-string (car x) (cdr x) result))))))
 
+(defun org-cliplink-title-for-url (url title)
+  "Replace title using configured rules.
+
+Find the first entry (URL-REGEXP (TITLE-REGEXP REPLACEMENT)) in
+`org-cliplink-title-replacements' where URL-REGEXP matches URL,
+and return TITLE with any matches for TITLE-REGEXP replaced by
+REPLACEMENT.
+
+If no URL-REGEXP matches URL, or if the first matching entry's
+TITLE-REGEXP does not match TITLE, return the original TITLE."
+  (save-match-data
+    (cl-loop for (url-re (title-re rep)) in org-cliplink-title-replacements
+             when (string-match url-re url)
+             return (replace-regexp-in-string title-re rep title)
+             finally return title)))
+
 (defun org-cliplink-org-mode-link-transformer (url title)
   (if title
       (format "[[%s][%s]]" url (org-cliplink-elide-string
                                 (org-cliplink-escape-html4
-                                 title)
+                                 (org-cliplink-title-for-url url title))
                                 org-cliplink-max-length))
     (format "[[%s]]" url)))
 
