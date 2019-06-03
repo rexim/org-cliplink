@@ -50,6 +50,7 @@
 ;;; Code:
 
 (require 'em-glob)
+(require 'subr-x) ; for string-trim
 
 (require 'org-cliplink-string)
 (require 'org-cliplink-transport)
@@ -430,7 +431,8 @@ When nil, use the first element of kill-ring as source"
                           (fboundp 'simpleclip-get-contents))
                      (simpleclip-get-contents)
                    (current-kill 0))))
-    (substring-no-properties content)))
+    (string-trim
+     (substring-no-properties content))))
 
 (defun org-cliplink-parse-raw-header (raw-header)
   (let ((start 0)
