@@ -1,5 +1,8 @@
 (ert-deftest org-cliplink-elide-string-test ()
   (should (not (org-cliplink-elide-string nil 0)))
+  (let ((max-length nil)
+        (long-string (make-string 1000 ?x)))
+    (should (equal long-string (org-cliplink-elide-string long-string max-length))))
   (let ((max-length 5))
     (should (equal "test" (org-cliplink-elide-string "test" max-length)))
     (should (equal "hello" (org-cliplink-elide-string "hello" max-length)))

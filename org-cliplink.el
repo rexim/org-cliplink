@@ -380,7 +380,7 @@ buffer."
 Org-cliplink cuts any title that exceeds the limit. Minimum
 possible value is 4."
   :group 'org-cliplink
-  :type 'integer)
+  :type '(choice integer (const :tag "off" nil)))
 
 (defcustom org-cliplink-secrets-path "~/.org-cliplink-secrets.el"
   "Path to file that keeps your org-cliplink related secrets.
