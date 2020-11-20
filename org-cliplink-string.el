@@ -5,7 +5,6 @@
 (defun org-cliplink-join-string (ss)
   (mapconcat #'identity ss " "))
 
-(setq org-cliplink-ellipsis "...")
 (defun org-cliplink-elide-string (s max-length)
   (if max-length
       (when s
