@@ -383,6 +383,11 @@ possible value is 4."
   :group 'org-cliplink
   :type '(choice integer (const :tag "off" nil)))
 
+(defcustom org-cliplink-ellipsis "..."
+  "String to mark the end of truncated titles"
+  :group 'org-cliplink
+  :type 'string)
+
 (defcustom org-cliplink-secrets-path "~/.org-cliplink-secrets.el"
   "Path to file that keeps your org-cliplink related secrets.
 It can be any sensitive information like password to different

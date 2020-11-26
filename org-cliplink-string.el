@@ -10,9 +10,9 @@
       (when s
         (if (> max-length 3)
             (if (> (length s) max-length)
-                (concat (substring s 0 (- max-length 3)) "...")
+                (concat (substring s 0 (- max-length 3)) org-cliplink-ellipsis)
               s)
-          "..."))
+          org-cliplink-ellipsis))
     s))
 
 (provide 'org-cliplink-string)
