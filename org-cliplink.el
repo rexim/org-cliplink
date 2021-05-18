@@ -559,10 +559,18 @@ TITLE-REGEXP does not match TITLE, return the original TITLE."
   "Takes the URL, asynchronously retrieves the title and applies
 a custom TRANSFORMER which transforms the url and title and insert
 the required text to the current buffer."
-  (org-cliplink-retrieve-title
-   url
-   (lambda (url title)
-     (insert (funcall transformer url title)))))
+  (let ((m (point-marker)))
+    (org-cliplink-retrieve-title
+     url
+     (lambda (url title)
+       (let ((save-and-restore-position (/= (point) m))
+             (link (funcall transformer url title)))
+         (if save-and-restore-position
+             (save-excursion
+               (goto-char m)
+               (insert link))
+           (insert link))
+         (set-marker m nil))))))
 
 ;;;###autoload
 (defun org-cliplink-retrieve-title-synchronously (url)
