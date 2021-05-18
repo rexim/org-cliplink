@@ -90,15 +90,6 @@
                   "&amp;[Hello] &#39;[World] &alpha; &nbsp;")))
   (should (not (org-cliplink-escape-html4 nil))))
 
-(ert-deftest org-cliplink-insert-org-mode-link-callback-test ()
-  (with-temp-buffer
-    (org-cliplink-insert-org-mode-link-callback "http://google.com/" "Google")
-    (should (equal (buffer-string) "[[http://google.com/][Google]]")))
-
-  (with-temp-buffer
-    (org-cliplink-insert-org-mode-link-callback "http://google.com" nil)
-    (should (equal (buffer-string) "[[http://google.com]]"))))
-
 (ert-deftest org-cliplink-uncompress-gziped-text-test ()
   (let ((gziped-content (concat "\x1F\x8B\x08\x00\xD8\x8B"
                                 "\x74\x55\x00\x03\xCB\x48"

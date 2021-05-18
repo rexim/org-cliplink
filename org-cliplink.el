@@ -500,9 +500,6 @@ TITLE-REGEXP does not match TITLE, return the original TITLE."
                                 org-cliplink-max-length))
     (format "[[%s]]" url)))
 
-(defun org-cliplink-insert-org-mode-link-callback (url title)
-  (insert (org-cliplink-org-mode-link-transformer url title)))
-
 (defun org-cliplink-uncompress-gziped-text (text)
   (let ((filename (make-temp-file "org-cliplink" nil ".gz")))
     (write-region text nil filename)
