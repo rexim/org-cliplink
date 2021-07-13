@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (ert-deftest org-cliplink-parse-raw-header-test ()
   (should (equal
            '(("Last-Modified" . "Sun, 08 Mar 2015 14:06:08 GMT")

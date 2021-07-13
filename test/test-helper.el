@@ -1,4 +1,6 @@
-(require 'cl)
+;;; -*- lexical-binding: t -*-
+
+(require 'cl-lib)
 (require 'el-mock)
 (require 'undercover)
 
