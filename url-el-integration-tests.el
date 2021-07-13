@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (require 'ert)
 
 (add-to-list 'load-path ".")

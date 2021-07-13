@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (ert-deftest org-cliplink-elide-string-test ()
   (should (not (org-cliplink-elide-string nil 0)))
   (let ((max-length nil)
