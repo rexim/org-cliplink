@@ -412,7 +412,8 @@ Each entry has the form (URL-REGEXP . (TITLE-REGEXP . REPLACEMENT))."
 Supported transports are `url-el' and `curl'. `curl' is
 experimental so use it on your own risk."
   :group 'org-cliplink
-  :type 'symbol)
+  :type '(choice (const :tag "cURL backend" curl)
+                 (const :tag "Emacs backend" url-el)))
 
 (defcustom org-cliplink-curl-transport-arguments '()
   "Additional arguments for cURL.
