@@ -358,7 +358,10 @@
 (defun org-cliplink-escape-numeric-match (s)
   (char-to-string
    (string-to-number
-    (match-string 1 s))))
+    (match-string 2 s)
+    (if (equal "x" (match-string 1 s))
+        16
+      10))))
 
 (defvar org-cliplink-escape-alist
   (append org-cliplink-basic-escape-alist
@@ -366,7 +369,7 @@
           org-cliplink-html40-extended-escape-alist
           '(("\\[" . "{")
             ("\\]" . "}")
-            ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match))))
+            ("&#\\(x\\)?\\([0-9]+\\);" . org-cliplink-escape-numeric-match))))
 
 (defgroup org-cliplink nil
   "A simple command that takes a URL from the clipboard and inserts an
