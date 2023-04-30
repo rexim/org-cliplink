@@ -369,7 +369,7 @@
           org-cliplink-html40-extended-escape-alist
           '(("\\[" . "{")
             ("\\]" . "}")
-            ("&#\\(x\\)?\\([0-9a-f]+\\);" . org-cliplink-escape-numeric-match))))
+            ("&#\\(x\\)?\\([[:xdigit:]]+\\);" . org-cliplink-escape-numeric-match))))
 
 (defgroup org-cliplink nil
   "A simple command that takes a URL from the clipboard and inserts an
