@@ -20,7 +20,8 @@ class SimpleAuthHandler(SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        key = base64.b64encode(self.username + ":" + self.password)
+      credentials = f"{self.username}:{self.password}".encode()
+key = base64.b64encode(credentials).decode()
         if self.headers.getheader('Authorization') is None:
             self.do_AUTHHEAD()
             self.wfile.write('no auth header received')
