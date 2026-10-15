@@ -88,6 +88,9 @@
   (should (equal "&{Hello} '{World} α  "
                  (org-cliplink-escape-html4
                   "&amp;[Hello] &#39;[World] &alpha; &nbsp;")))
+  (should (equal "parents' coffee machine — 'quoted'"
+                 (org-cliplink-escape-html4
+                  "parents&#x27; coffee machine &#X2014; &#x27;quoted&#x27;")))
   (should (not (org-cliplink-escape-html4 nil))))
 
 (ert-deftest org-cliplink-insert-org-mode-link-callback-test ()

@@ -360,13 +360,19 @@
    (string-to-number
     (match-string 1 s))))
 
+(defun org-cliplink-escape-hex-numeric-match (s)
+  (char-to-string
+   (string-to-number
+    (match-string 1 s) 16)))
+
 (defvar org-cliplink-escape-alist
   (append org-cliplink-basic-escape-alist
           org-cliplink-iso8869-1-escape-alist
           org-cliplink-html40-extended-escape-alist
           '(("\\[" . "{")
             ("\\]" . "}")
-            ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match))))
+            ("&#\\([0-9]+\\);" . org-cliplink-escape-numeric-match)
+            ("&#[xX]\\([0-9a-fA-F]+\\);" . org-cliplink-escape-hex-numeric-match))))
 
 (defgroup org-cliplink nil
   "A simple command that takes a URL from the clipboard and inserts an
